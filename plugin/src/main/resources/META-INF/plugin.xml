@@ -1,0 +1,17 @@
+<idea-plugin>
+    <id>com.github.frimtec.idea-todo-inspection-plugin</id>
+    <name>Todo Inspection</name>
+
+    <vendor email="frimtec@gmx.ch" url="https://github.com/frimtec">frimTEC</vendor>
+
+    <description><![CDATA[
+        Enter short description for your plugin here.<br>
+        <em>most HTML tags may be used</em>
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+
+    </extensions>
+</idea-plugin>
