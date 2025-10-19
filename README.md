@@ -17,6 +17,10 @@ It solves a common problem: developers leaving ```// TODO comments``` in code, r
 ** Highlights TODOs if the ticket reference is syntactically invalid.
 
 ## ⬇️ Installation
+TODO
+
+## 🛠️ Configuration
+TODO
 
 ## ✍️ Usage
 
