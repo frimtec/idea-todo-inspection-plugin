@@ -1,0 +1,19 @@
+<idea-plugin>
+    <id>com.github.frimtec.idea-todo-inspection-plugin</id>
+    <name>Todo Inspection</name>
+
+    <vendor email="frimtec@gmx.ch" url="https://github.com/frimtec">frimTEC</vendor>
+    <description><![CDATA[
+        Reports all TODO comments that refer to a closed/resolved ticket or leak a JIRA ticket reference completely.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <localInspection language=""
+                         displayName="TODO comment (enhanced)"
+                         enabledByDefault="false"
+                         groupName="General"
+                         implementationClass="com.github.frimtec.idea.plugin.todoinspection.TodoInspection"/>
+    </extensions>
+</idea-plugin>

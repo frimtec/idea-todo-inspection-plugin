@@ -1,0 +1,19 @@
+[versions]
+
+plugin-kotlin-jvm="2.1.0"
+plugin-intellij-platform = "2.7.1"
+
+mockito = "5.20.0"
+assertj = "3.27.6"
+junit-jupiter = "6.0.0"
+
+[plugins]
+plugin-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "plugin-kotlin-jvm" }
+plugin-intellij-platform = { id = "org.jetbrains.intellij.platform", version.ref = "plugin-intellij-platform" }
+
+[libraries]
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+mockito-junit-jupiter = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito" }
+assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit-jupiter" }
+junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" } # No version needed here as it's runtimeOnly and typically aligns with JUnit Jupiter
