@@ -3,6 +3,11 @@
 plugin-kotlin-jvm="2.1.0"
 plugin-intellij-platform = "2.7.1"
 
+retrofit = "2.9.0"
+retrofit-converter-gson = "3.0.0"
+gson = "2.11.0"
+
+wiremock = "3.0.1"
 mockito = "5.20.0"
 assertj = "3.27.6"
 junit-jupiter = "6.0.0"
@@ -12,6 +17,12 @@ plugin-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "plugin-kot
 plugin-intellij-platform = { id = "org.jetbrains.intellij.platform", version.ref = "plugin-intellij-platform" }
 
 [libraries]
+
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit-converter-gson" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+
+wiremock = { group = "com.github.tomakehurst", name = "wiremock", version.ref = "wiremock" }
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
 mockito-junit-jupiter = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito" }
 assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
