@@ -1,7 +1,7 @@
 [versions]
 
 plugin-kotlin-jvm="2.1.0"
-plugin-intellij-platform = "2.7.1"
+plugin-intellij-platform = "2.10.2"
 
 retrofit = "2.9.0"
 retrofit-converter-gson = "3.0.0"
