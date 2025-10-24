@@ -1,5 +1,14 @@
 # Idea TODO Inspection Plugin
+[![JetBrains Plugins][jetbrains-plugin-release-shield]][jetbrains-plugin]
+![Plugin Downloads][jetbrains-plugin-download-shield]
 
+![Project Maintenance][maintenance-shield]
+[![License][license-shield]][license]
+
+[![Build Status][build-status-shield]][build-status]
+[![Deploy Status][deploy-status-shield]][deploy-status]
+
+<!-- Plugin description -->
 ## 💡 Overview
 
 The Idea TODO Inspection Plugin is a IntelliJ IDEA plugin designed to enhance the standard TODO inspection mechanism by integrating directly with your JIRA instance.
@@ -15,6 +24,7 @@ It solves a common problem: developers leaving ```// TODO comments``` in code, r
 * Real-time Error Highlighting:
 ** Highlights TODOs if the referenced JIRA ticket is marked as Closed, Done, or any other configured "final" status.
 ** Highlights TODOs if the ticket reference is syntactically invalid.
+<!-- Plugin description end -->
 
 ## ⬇️ Installation
 TODO
@@ -38,3 +48,14 @@ Examples:
 
 When an issue is detected, the line will be underlined in the editor, and the problem will appear in the Problems tool window.
 
+[license-shield]: https://img.shields.io/github/license/frimtec/idea-todo-inspection-plugin.svg
+[license]: https://opensource.org/licenses/Apache-2.0
+[maintenance-shield]: https://img.shields.io/maintenance/yes/2025.svg
+[build-status-shield]: https://github.com/frimtec/idea-todo-inspection-plugin/workflows/Build/badge.svg
+[build-status]: https://github.com/frimtec/idea-todo-inspection-plugin/actions?query=workflow%3ABuild
+[deploy-status-shield]: https://github.com/frimtec/idea-todo-inspection-plugin/actions/workflows/release.yml/badge.svg
+[deploy-status]: https://github.com/frimtec/idea-todo-inspection-plugin/actions/workflows/release.yml
+[jetbrains-plugin-release-shield]: https://img.shields.io/jetbrains/plugin/v/28829
+[jetbrains-plugin-download-shield]: https://img.shields.io/jetbrains/plugin/d/28829
+[jetbrains-plugin]: https://plugins.jetbrains.com/plugin/28829-todo-inspection
+[latest-release]: https://github.com/frimtec/idea-todo-inspection-plugin/releases/latest

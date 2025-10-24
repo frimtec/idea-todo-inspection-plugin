@@ -2,6 +2,8 @@
 
 plugin-kotlin-jvm="2.1.0"
 plugin-intellij-platform = "2.10.2"
+changelog = "2.4.0"
+qodana = "2025.2.1"
 
 retrofit = "2.9.0"
 retrofit-converter-gson = "3.0.0"
@@ -15,6 +17,8 @@ junit-jupiter = "6.0.0"
 [plugins]
 plugin-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "plugin-kotlin-jvm" }
 plugin-intellij-platform = { id = "org.jetbrains.intellij.platform", version.ref = "plugin-intellij-platform" }
+changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
+qodana = { id = "org.jetbrains.qodana", version.ref = "qodana" }
 
 [libraries]
 
