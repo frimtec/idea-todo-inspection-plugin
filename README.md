@@ -1,4 +1,5 @@
 # Idea TODO Inspection Plugin
+
 [![JetBrains Plugins][jetbrains-plugin-release-shield]][jetbrains-plugin]
 ![Plugin Downloads][jetbrains-plugin-download-shield]
 
@@ -8,45 +9,61 @@
 [![Build Status][build-status-shield]][build-status]
 [![Deploy Status][deploy-status-shield]][deploy-status]
 
-<!-- Plugin description -->
+![Icon](plugin/src/main/resources/META-INF/pluginIcon.svg)
+
 ## 💡 Overview
 
-The Idea TODO Inspection Plugin is a IntelliJ IDEA plugin designed to enhance the standard TODO inspection mechanism by integrating directly with your JIRA instance.
+<!-- Plugin description -->
+The `TODO Inspection Plugin` is an IntelliJ-IDEA plugin, designed to enhance the standard TODO inspection mechanism by
+integrating with a Jira ticketing system.
 
-It solves a common problem: developers leaving ```// TODO comments``` in code, referencing a JIRA ticket, only for that ticket to be closed later, leaving the technical debt forgotten. This plugin ensures that your TODOs are always relevant and actionable, surfacing errors when a linked ticket is already complete.
+It solves a common problem that developers leaving `TODO`-comments in the code, referencing tickets, only for that
+ticket to be closed later, leaving the technical debt forgotten. 
+This plugin ensures that your `TODO`'s are always relevant and actionable, surfacing warnings when a linked ticket is already complete.
+<!-- Plugin description end -->
 
 ## ✨ Features
 
-* This plugin provides proactive feedback right in your editor:
-** JIRA Ticket Validation: Automatically inspects your TODO comments to detect and validate structured JIRA ticket keys (e.g., PROJECT-123).
-** Stale TODO Detection: Checks the status of the referenced JIRA ticket using the JIRA API.
+This plugin provides real-time feedback by marking `TODO` or `FIXME` comments in the editor if:
+* No Jira ticket is referenced from the `TODO` comment.
+* The referenced Jira ticket is already closed.
+* Jira is not accessible due to configuration issues or system unavailability.
 
-* Real-time Error Highlighting:
-** Highlights TODOs if the referenced JIRA ticket is marked as Closed, Done, or any other configured "final" status.
-** Highlights TODOs if the ticket reference is syntactically invalid.
-<!-- Plugin description end -->
-
-## ⬇️ Installation
-TODO
-
-## 🛠️ Configuration
-TODO
-
-## ✍️ Usage
-
-The inspector looks for TODO or FIXME comments containing a valid JIRA project key and number, such as: 
-```// TODO PROJECT-45 Refactor this class before launching new feature X.```
+![Warnings](images/warning.png)
 
 Examples:
-| Status in JIRA | Code Comment | Plugin Behavior |
-| :--- | :---: | ---: |
-| In Progress | // TODO PROJECT-123 Fix race condition | No Warning |
-| Closed | // TODO PROJECT-123 Fix race condition | Warning Highlighted. (Stale debt) |
-| Not existing | // TODO PROJECT-1239999 Fix race condition | Warning Highlighted. (Not found debt) |
-| Invalid Key | // TODO PROJ_123 Update API | Warning Highlighted. (Invalid format) |
-| No Key | // TODO Update API | Warning Highlighted. (Invalid format) |
 
-When an issue is detected, the line will be underlined in the editor, and the problem will appear in the Problems tool window.
+| Code Comment                                 | Status in JIRA | Plugin Behavior                                           |
+|----------------------------------------------|----------------|-----------------------------------------------------------|
+| `// TODO PROJECT-123 Fix race condition`     | In Progress    | No Warning                                                |
+| `// TODO PROJECT-123 Fix race condition`     | Closed         | Warning: `TODO references a ticket which is already done` |
+| `// TODO PROJECT-1239999 Fix race condition` | n/a            | Warning:  `TODO references a ticket that does not exist`  |
+| `// TODO Update API`                         | n/a            | Warning: `TODO does not reference a ticket`               |
+
+### ⬇️ Installation
+- Using IDE built-in plugin system:
+  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "Todo Inspection"</kbd> >
+  <kbd>Install Plugin</kbd>
+
+- Manually:
+  Download the [latest release][latest-release] and install it manually using
+  <kbd>Settings</kbd> > <kbd>Plugins</kbd> > <kbd>⚙</kbd> > <kbd>Install plugin from disk...</kbd>
+
+### 🛠️ Configuration
+
+The configuration is done under <kbd>Settings</kbd> > <kbd>Editor</kbd> > <kbd>Inspections</kbd> > <kbd>General</kbd> > <kbd>TODO comment (enhanced)</kbd>:
+![Configuration](images/config.png)
+
+The following settings are available:
+
+| Setting            | Comment                                                                                               | Default Value        |
+|--------------------|-------------------------------------------------------------------------------------------------------|----------------------|
+| Allow FIXME        | If unchecked all `FIXME`'s are marked as warning, otherwise `FIXME`'s are handled the same way as `TODO`'s. | `unchecked`          |
+| Jira URL           | URL of your Jira instance.                                                                            |                      |
+| Jira Username      | Username of a Jira account (requires read access to tickets only).                                    |                      |
+| Jira API-Token     | API token or password of used Jira account.                                                           |                      |
+| Jira Project Keys  | Comma seperated list of all Jira project IDs to be used.                                              |                      |
+| Jira Closed States | Comma seperated list of Jira states treated as closed.                                                | Closed,Done,Resolved |
 
 [license-shield]: https://img.shields.io/github/license/frimtec/idea-todo-inspection-plugin.svg
 [license]: https://opensource.org/licenses/Apache-2.0

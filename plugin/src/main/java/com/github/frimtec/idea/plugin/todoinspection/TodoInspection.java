@@ -152,7 +152,7 @@ public class TodoInspection extends LocalInspectionTool {
                     "%s references a ticket that does not exist".formatted(todo.type());
             case NO_TICKET_REFERENCE -> "%s does not reference a ticket".formatted(todo.type());
             case UNKNOWN_TICKET_STATUS ->
-                    "%s references a ticket for which the ticket status currently unknown".formatted(todo.type());
+                    "%s references a ticket for which the ticket status is currently unknown".formatted(todo.type());
             case JIRA_CONFIGURATION_ERROR -> "Missing or invalid Jira configuration";
             case CONSISTENT -> throw new IllegalStateException("Unexpected todo status: " + todo.status());
         };
