@@ -31,7 +31,12 @@ class JiraServiceTest {
     private static final String TEST_HOST = "localhost";
     @SuppressWarnings("HttpUrlsUsage")
 
-    private final JiraService service = new JiraService("http://%s:%d/".formatted(TEST_HOST, TEST_PORT), "user", "token", null);
+    private final JiraService service = new JiraService(
+            "http://%s:%d/".formatted(TEST_HOST, TEST_PORT),
+            "user",
+            "token",
+            null
+    );
 
     private WireMockServer wireMockServer;
 

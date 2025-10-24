@@ -11,14 +11,13 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElementVisitor;
+import com.intellij.util.net.ssl.CertificateManager;
 import org.jdom.Element;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.lang.invoke.MethodHandles;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -43,9 +42,6 @@ public class TodoInspection extends LocalInspectionTool {
     @SuppressWarnings({"WeakerAccess", "PublicField"})
     @NonNls
     public String jiraApiToken = "";
-    @SuppressWarnings({"WeakerAccess", "PublicField"})
-    @NonNls
-    public String truststoreFilePath = "";
     @SuppressWarnings({"WeakerAccess", "PublicField"})
     @NonNls
     public String jiraProjectKeys = "";
@@ -73,10 +69,6 @@ public class TodoInspection extends LocalInspectionTool {
                 this.jiraApiToken = value;
                 this.inspectionOptions = buildInspectionOptions();
             }),
-            textOption("Truststore file path", () -> this.truststoreFilePath, (value) -> {
-                this.truststoreFilePath = value;
-                this.inspectionOptions = buildInspectionOptions();
-            }),
             textOption("Jira Project Keys", () -> this.jiraProjectKeys, (value) -> {
                 this.jiraProjectKeys = value;
                 this.inspectionOptions = buildInspectionOptions();
@@ -99,7 +91,6 @@ public class TodoInspection extends LocalInspectionTool {
         this.jiraUrl = this.inspectionOptions.jiraUrl();
         this.jiraUsername = this.inspectionOptions.jiraUsername();
         this.jiraApiToken = this.inspectionOptions.jiraApiToken();
-        this.truststoreFilePath = this.inspectionOptions.truststoreFilePath();
         this.jiraProjectKeys = this.inspectionOptions.jiraProjectKeys();
         this.jiraClosedStates = this.inspectionOptions.jiraClosedStates();
         super.writeSettings(node);
@@ -109,21 +100,22 @@ public class TodoInspection extends LocalInspectionTool {
     @Override
     public PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         LOGGER.warn("Create new visitor: " + this.inspectionOptions);
+        CertificateManager certificateManager = CertificateManager.getInstance();
+        JiraService jiraService = new JiraService(
+                TodoInspection.this.jiraUrl,
+                TodoInspection.this.jiraUsername,
+                TodoInspection.this.jiraApiToken,
+                new JiraService.TlsTrust(
+                        certificateManager.getSslContext(),
+                        certificateManager.getTrustManager()
+                )
+        );
         return new PsiElementVisitor() {
             final TodoScanner todoScanner = new TodoScanner(
-                    new JiraService(
-                            TodoInspection.this.jiraUrl,
-                            TodoInspection.this.jiraUsername,
-                            TodoInspection.this.jiraApiToken,
-                            emptyString(TodoInspection.this.truststoreFilePath) ? null : Path.of(TodoInspection.this.truststoreFilePath)
-                    ),
+                    jiraService,
                     split(TodoInspection.this.jiraProjectKeys),
                     Ticket.statusMapper(split(TodoInspection.this.jiraClosedStates))
             );
-
-            private boolean emptyString(@Nullable String string) {
-                return string == null || string.isBlank();
-            }
 
             @Override
             public void visitComment(@NotNull PsiComment comment) {
@@ -133,7 +125,7 @@ public class TodoInspection extends LocalInspectionTool {
                     if (todo.status() != Todo.TodoStatus.CONSISTENT) {
                         holder.registerProblem(comment, convertToTextRange(todo.textRange()), String.format("TODO state: %s".formatted(todo.status())));
                     }
-                    if(todo.type() == Todo.Type.FIXME && TodoInspection.this.allowFixme.equals("false")) {
+                    if (todo.type() == Todo.Type.FIXME && TodoInspection.this.allowFixme.equals("false")) {
                         holder.registerProblem(comment, convertToTextRange(todo.textRange()), "FIXME not allowed");
                     }
                 });
@@ -161,7 +153,6 @@ public class TodoInspection extends LocalInspectionTool {
                 this.jiraUrl,
                 this.jiraUsername,
                 this.jiraApiToken,
-                this.truststoreFilePath,
                 this.jiraProjectKeys,
                 this.jiraClosedStates
         );

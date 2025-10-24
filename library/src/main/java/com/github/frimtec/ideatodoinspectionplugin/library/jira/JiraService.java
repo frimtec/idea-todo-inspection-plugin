@@ -9,17 +9,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.function.Function;
@@ -38,11 +29,16 @@ public class JiraService {
     private final JiraRestService jiraRestService;
     private final String authorization;
 
-    public JiraService(String jiraBaseUrl, String username, String apiToken, @Nullable Path trustStorePath) {
+    public JiraService(
+            String jiraBaseUrl,
+            String username,
+            String apiToken,
+            @Nullable TlsTrust tlsTrust
+    ) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(jiraBaseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(httpClient(trustStorePath))
+                .client(httpClient(tlsTrust))
                 .build();
         this.jiraRestService = retrofit.create(JiraRestService.class);
         this.authorization = authorization(username, apiToken);
@@ -58,38 +54,14 @@ public class JiraService {
         return "Basic " + Base64.getEncoder().encodeToString((username + ":" + apiToken).getBytes());
     }
 
-    private @NotNull OkHttpClient httpClient(@Nullable Path trustStorePath) {
+    public record TlsTrust(SSLContext sslContext, X509TrustManager trustManager) {
+
+    }
+
+    private @NotNull OkHttpClient httpClient(@Nullable TlsTrust tlsTrust) {
         OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder();
-        if (trustStorePath != null) {
-            try {
-                KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-                try (FileInputStream fis = new FileInputStream(trustStorePath.toFile())) {
-                    trustStore.load(fis, "".toCharArray());
-                }
-
-                TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-                trustManagerFactory.init(trustStore);
-
-                X509TrustManager trustManager = null;
-                for (TrustManager tm : trustManagerFactory.getTrustManagers()) {
-                    if (tm instanceof X509TrustManager) {
-                        trustManager = (X509TrustManager) tm;
-                        break;
-                    }
-                }
-
-                if (trustManager != null) {
-                    SSLContext sslContext = SSLContext.getInstance("TLS");
-                    sslContext.init(null, new TrustManager[]{trustManager}, null);
-                    httpClientBuilder.sslSocketFactory(sslContext.getSocketFactory(), trustManager);
-                } else {
-                    throw new RuntimeException("No X509TrustManager found in the TrustManagerFactory");
-                }
-
-            } catch (NoSuchAlgorithmException | KeyStoreException | CertificateException | IOException |
-                     KeyManagementException e) {
-                throw new RuntimeException("Cannot configure truststore", e);
-            }
+        if (tlsTrust != null) {
+            httpClientBuilder.sslSocketFactory(tlsTrust.sslContext().getSocketFactory(), tlsTrust.trustManager());
         }
         return httpClientBuilder.build();
     }

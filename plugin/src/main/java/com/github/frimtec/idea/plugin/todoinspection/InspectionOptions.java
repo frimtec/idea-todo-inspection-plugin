@@ -5,7 +5,6 @@ record InspectionOptions(
         String jiraUrl,
         String jiraUsername,
         String jiraApiToken,
-        String truststoreFilePath,
         String jiraProjectKeys,
         String jiraClosedStates
 ) {
@@ -15,7 +14,6 @@ record InspectionOptions(
             String jiraUrl,
             String jiraUsername,
             String jiraApiToken,
-            String truststoreFilePath,
             String jiraProjectKeys,
             String jiraClosedStates
     ) {
@@ -24,7 +22,6 @@ record InspectionOptions(
                 jiraUrl,
                 jiraUsername,
                 jiraApiToken,
-                truststoreFilePath,
                 jiraProjectKeys,
                 jiraClosedStates
         );
