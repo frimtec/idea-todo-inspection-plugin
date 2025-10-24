@@ -2,12 +2,14 @@ package com.github.frimtec.ideatodoinspectionplugin.library.scanner;
 
 
 import com.github.frimtec.ideatodoinspectionplugin.library.jira.JiraService;
+import com.github.frimtec.ideatodoinspectionplugin.library.model.Ticket;
 import com.github.frimtec.ideatodoinspectionplugin.library.model.Todo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,11 +21,13 @@ public class TodoScanner {
     private final JiraService jiraService;
     private final Pattern todoPattern;
     private final Pattern jiraPattern;
+    private final Function<String, Ticket.Status> doneMapping;
 
-    public TodoScanner(JiraService jiraService, Set<String> jiraProjectsKeys) {
+    public TodoScanner(JiraService jiraService, Set<String> jiraProjectsKeys, Function<String, Ticket.Status> doneMapping) {
         this.jiraService = jiraService;
         this.todoPattern = Pattern.compile("(" + String.join("|", Arrays.stream(Todo.Type.values()).map(Todo.Type::name).toList()) + ").*");
         this.jiraPattern = Pattern.compile(".*((" + String.join("|", jiraProjectsKeys) + ")-[0-9]+).*");
+        this.doneMapping = doneMapping;
     }
 
     public List<Todo> parseTodo(String commentBlock) {
@@ -35,7 +39,7 @@ public class TodoScanner {
             Todo.TextRange textRange = new Todo.TextRange(result.startIndex(), result.endIndex());
             Matcher matcher = this.jiraPattern.matcher(result.match());
             if (matcher.find()) {
-                todos.add(new Todo(type, textRange, this.jiraService.loadTicket(matcher.group(1))));
+                todos.add(new Todo(type, textRange, this.jiraService.loadTicket(matcher.group(1)), this.doneMapping));
             } else {
                 todos.add(new Todo(type, textRange, Todo.TodoStatus.NO_TICKET_REFERENCE));
             }

@@ -12,12 +12,17 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.util.Set;
+import java.util.function.Function;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class JiraServiceTest {
+
+    private final static Set<String> CLOSED_STATES = Set.of("Closed", "Done", "Resolved");
+    private static final Function<String, Ticket.Status> DONE_MAPPING = Ticket.statusMapper(CLOSED_STATES);
 
     private static final String TICKET_ID = "TICKET-123";
 
@@ -89,7 +94,7 @@ class JiraServiceTest {
 
         assertThat(ticket.key()).isEqualTo(TICKET_ID);
         assertThat(ticket.summary()).isEqualTo("Ticket summary");
-        assertThat(ticket.status()).isEqualTo(Ticket.Status.valueOf(expectedTicketStatus));
+        assertThat(ticket.status(DONE_MAPPING)).isEqualTo(Ticket.Status.valueOf(expectedTicketStatus));
     }
 
     @Test
@@ -104,7 +109,7 @@ class JiraServiceTest {
 
         assertThat(ticket.key()).isEqualTo(TICKET_ID);
         assertThat(ticket.summary()).isEqualTo("Ticket does not exist");
-        assertThat(ticket.status()).isEqualTo(Ticket.Status.NOT_EXISTING);
+        assertThat(ticket.status(DONE_MAPPING)).isEqualTo(Ticket.Status.NOT_EXISTING);
     }
 
     @Test
@@ -119,7 +124,7 @@ class JiraServiceTest {
 
         assertThat(ticket.key()).isEqualTo(TICKET_ID);
         assertThat(ticket.summary()).isEqualTo("Error in jira remote call: 500 Server Error");
-        assertThat(ticket.status()).isEqualTo(Ticket.Status.UNKNOWN);
+        assertThat(ticket.status(DONE_MAPPING)).isEqualTo(Ticket.Status.UNKNOWN);
     }
 
     @Test
@@ -133,6 +138,6 @@ class JiraServiceTest {
 
         assertThat(ticket.key()).isEqualTo(TICKET_ID);
         assertThat(ticket.summary()).isEqualTo("Error in jira remote call: Test exception");
-        assertThat(ticket.status()).isEqualTo(Ticket.Status.UNKNOWN);
+        assertThat(ticket.status(DONE_MAPPING)).isEqualTo(Ticket.Status.UNKNOWN);
     }
 }

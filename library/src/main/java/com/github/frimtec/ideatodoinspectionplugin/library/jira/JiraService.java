@@ -22,12 +22,17 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Base64;
 import java.util.Objects;
+import java.util.function.Function;
 
 public class JiraService {
 
     private static final int SC_NOT_FOUND = 404;
 
     private record ErrorTicket(String key, Status status, String summary) implements Ticket {
+        @Override
+        public Status status(Function<String, Status> doneMapping) {
+            return status;
+        }
     }
 
     private final JiraRestService jiraRestService;

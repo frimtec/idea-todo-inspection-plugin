@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -23,9 +24,7 @@ class TodoScannerTest {
 
     @Test
     void parseTodoForTodoWithNoTicketReference() {
-        TodoScanner scanner = new TodoScanner(jiraService, Set.of("SICIV", "SIC5", "TOOL"));
-
-        List<Todo> todos = scanner.parseTodo("""
+        List<Todo> todos = scanner().parseTodo("""
                 // TODO bla fasel
                 """);
         assertThat(todos).hasSize(1);
@@ -38,11 +37,10 @@ class TodoScannerTest {
 
     @Test
     void parseTodoForTodoWithMultiline() {
-        TodoScanner scanner = new TodoScanner(jiraService, Set.of("SICIV", "SIC5", "TOOL"));
         mockTicket("SICIV-17425", Ticket.Status.DONE);
         mockTicket("TOOL-453944", Ticket.Status.NOT_EXISTING);
 
-        List<Todo> todos = scanner.parseTodo("""
+        List<Todo> todos = scanner().parseTodo("""
                 /* bla
                  * TODO tkf9m SICIV-17425 Bla bla
                  * bla
@@ -73,8 +71,16 @@ class TodoScannerTest {
 
     private void mockTicket(String ticketReference, Ticket.Status status) {
         Ticket ticket = mock(Ticket.class);
-        when(ticket.status()).thenReturn(status);
+        when(ticket.status(any())).thenReturn(status);
         when(jiraService.loadTicket(ticketReference)).thenReturn(ticket);
+    }
+
+    private TodoScanner scanner() {
+        return new TodoScanner(
+                jiraService,
+                Set.of("SICIV", "SIC5", "TOOL"),
+                Ticket.statusMapper(Set.of("Closed", "Done", "Resolved"))
+        );
     }
 
 }

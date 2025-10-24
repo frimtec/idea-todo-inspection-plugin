@@ -1,6 +1,7 @@
 package com.github.frimtec.ideatodoinspectionplugin.library.model;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 public class Todo {
 
@@ -26,11 +27,11 @@ public class Todo {
     private final TodoStatus status;
     private final Ticket ticket;
 
-    public Todo(Type type, TextRange textRange, Ticket ticket) {
+    public Todo(Type type, TextRange textRange, Ticket ticket, Function<String, Ticket.Status> doneMapping) {
         this.type = type;
         this.textRange = textRange;
         this.ticket = ticket;
-        this.status = switch (ticket.status()) {
+        this.status = switch (ticket.status(doneMapping)) {
             case OPEN -> TodoStatus.CONSISTENT;
             case DONE -> TodoStatus.INCONSISTENT_TICKET_DONE;
             case NOT_EXISTING -> TodoStatus.INCONSISTENT_TICKET_NOT_EXISTING;
