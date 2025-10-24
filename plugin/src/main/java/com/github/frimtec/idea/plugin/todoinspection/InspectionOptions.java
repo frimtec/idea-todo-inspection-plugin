@@ -1,18 +1,32 @@
 package com.github.frimtec.idea.plugin.todoinspection;
 
-@SuppressWarnings({"AssignmentOrReturnOfFieldWithMutableType"})
-final class InspectionOptions {
-    private final String jiraUrl;
+record InspectionOptions(
+        String allowFixme,
+        String jiraUrl,
+        String jiraUsername,
+        String jiraApiToken,
+        String truststoreFilePath,
+        String jiraProjectKeys,
+        String jiraClosedStates
+) {
 
-    public InspectionOptions(String jiraUrl) {
-        this.jiraUrl = jiraUrl;
-    }
-
-    static InspectionOptions of(String jiraUrl) {
-        return new InspectionOptions(jiraUrl);
-    }
-
-    public String getJiraUrl() {
-        return jiraUrl;
+    static InspectionOptions of(
+            String allowFixme,
+            String jiraUrl,
+            String jiraUsername,
+            String jiraApiToken,
+            String truststoreFilePath,
+            String jiraProjectKeys,
+            String jiraClosedStates
+    ) {
+        return new InspectionOptions(
+                allowFixme,
+                jiraUrl,
+                jiraUsername,
+                jiraApiToken,
+                truststoreFilePath,
+                jiraProjectKeys,
+                jiraClosedStates
+        );
     }
 }

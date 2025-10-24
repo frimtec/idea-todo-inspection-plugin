@@ -1,17 +1,15 @@
 package com.github.frimtec.idea.plugin.todoinspection;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import com.intellij.ui.DocumentAdapter;
+import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.text.JTextComponent;
+import java.awt.*;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import org.jetbrains.annotations.NotNull;
-import com.intellij.ui.DocumentAdapter;
 
 public class OptionDialogHelper {
     private OptionDialogHelper() {
@@ -28,38 +26,53 @@ public class OptionDialogHelper {
             Option option = options.get(i);
             constraints.gridx = 0;
             constraints.gridy = i;
-            panel.add(new JLabel(option.label), constraints);
+            panel.add(new JLabel(option.label()), constraints);
             constraints.gridx = 1;
             constraints.gridy = i;
-            panel.add(createOptionField(option.propertyAccessor, option.propertySetter), constraints);
+            panel.add(option.component(), constraints);
         }
         return panel;
     }
 
-    private static JTextField createOptionField(Supplier<String> propertyAccessor, Consumer<String> propertySetter) {
-        JTextField field = new JTextField(propertyAccessor.get());
-        field.getDocument().addDocumentListener(new DocumentAdapter() {
-            @Override
-            public void textChanged(@NotNull DocumentEvent event) {
-                propertySetter.accept(field.getText());
-            }
-        });
-        return field;
+    interface Option {
+        String label();
+        JComponent component();
     }
 
-    static final class Option {
-        private final String label;
-        private final Supplier<String> propertyAccessor;
-        private final Consumer<String> propertySetter;
+    static Option textOption(String label, Supplier<String> propertyAccessor, Consumer<String> propertySetter) {
+        return new StringOption(label, propertyAccessor, propertySetter, false);
+    }
 
-        private Option(String label, Supplier<String> propertyAccessor, Consumer<String> propertySetter) {
-            this.label = label;
-            this.propertyAccessor = propertyAccessor;
-            this.propertySetter = propertySetter;
+    static Option secretOption(String label, Supplier<String> propertyAccessor, Consumer<String> propertySetter) {
+        return new StringOption(label, propertyAccessor, propertySetter, true);
+    }
+
+    static Option booleanOption(String label, Supplier<String> propertyAccessor, Consumer<String> propertySetter) {
+        return new BooleanOption(label, propertyAccessor, propertySetter);
+    }
+
+    private record StringOption(String label, Supplier<String> propertyAccessor, Consumer<String> propertySetter, boolean secret) implements Option {
+
+        @Override
+        public JComponent component() {
+            JTextComponent field = secret ? new JPasswordField(propertyAccessor.get()) : new JTextField(propertyAccessor.get());
+            field.getDocument().addDocumentListener(new DocumentAdapter() {
+                @Override
+                public void textChanged(@NotNull DocumentEvent event) {
+                    propertySetter.accept(field.getText());
+                }
+            });
+            return field;
         }
+    }
 
-        static Option create(String label, Supplier<String> propertyAccessor, Consumer<String> propertySetter) {
-            return new Option(label, propertyAccessor, propertySetter);
+    private record BooleanOption(String label, Supplier<String> propertyAccessor, Consumer<String> propertySetter) implements Option {
+
+        @Override
+        public JComponent component() {
+            JCheckBox field = new JCheckBox("", "true".equalsIgnoreCase(propertyAccessor.get()));
+            field.addActionListener(e -> propertySetter.accept(field.isSelected() ? "true" : "false"));
+            return field;
         }
     }
 
