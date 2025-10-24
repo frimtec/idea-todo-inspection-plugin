@@ -111,7 +111,7 @@ public class TodoInspection extends LocalInspectionTool {
                 var scannerEntry = TodoInspection.this.scannerEntry.get();
                 if (scannerEntry == null || !TodoInspection.this.inspectionOptions.equals(scannerEntry.options)) {
                     CertificateManager certificateManager = CertificateManager.getInstance();
-                    LOGGER.warn("Initialize new TodoScanner with options: " + inspectionOptions);
+                    LOGGER.info("Initialize new TodoScanner with options: " + inspectionOptions);
                     scannerEntry = new ScannerEntry(
                             inspectionOptions,
                             new TodoScanner(
