@@ -4,9 +4,9 @@ import com.github.frimtec.ideatodoinspectionplugin.library.jira.JiraService;
 import com.github.frimtec.ideatodoinspectionplugin.library.model.Ticket;
 import com.github.frimtec.ideatodoinspectionplugin.library.model.Todo;
 import com.github.frimtec.ideatodoinspectionplugin.library.scanner.TodoScanner;
-import com.intellij.codeHighlighting.HighlightDisplayLevel;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
+import com.intellij.codeInspection.util.InspectionMessage;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiComment;
@@ -119,17 +119,31 @@ public class TodoInspection extends LocalInspectionTool {
 
             @Override
             public void visitComment(@NotNull PsiComment comment) {
-                LOGGER.warn("Visiting comment: " + comment.getText());
                 todoScanner.parseTodo(comment.getText()).forEach(todo -> {
-                    LOGGER.warn("Todo found: " + todo);
-                    if (todo.status() != Todo.TodoStatus.CONSISTENT) {
-                        holder.registerProblem(comment, convertToTextRange(todo.textRange()), String.format("TODO state: %s".formatted(todo.status())));
-                    }
                     if (todo.type() == Todo.Type.FIXME && TodoInspection.this.allowFixme.equals("false")) {
                         holder.registerProblem(comment, convertToTextRange(todo.textRange()), "FIXME not allowed");
                     }
+                    if (todo.status() != Todo.TodoStatus.CONSISTENT) {
+                        holder.registerProblem(
+                                comment,
+                                convertToTextRange(todo.textRange()),
+                                formatWarnMessage(todo)
+                        );
+                    }
                 });
             }
+        };
+    }
+
+    private @NotNull @InspectionMessage String formatWarnMessage(Todo todo) {
+        return switch (todo.status()) {
+            case INCONSISTENT_TICKET_DONE -> "%s references a ticket which is already done".formatted(todo.type());
+            case INCONSISTENT_TICKET_NOT_EXISTING ->
+                    "%s references a ticket that does not exist".formatted(todo.type());
+            case NO_TICKET_REFERENCE -> "%s does not reference a ticket".formatted(todo.type());
+            case UNKNOWN_TICKET_STATUS ->
+                    "%s references a ticket for which the ticket status currently unknown".formatted(todo.type());
+            case CONSISTENT -> throw new IllegalStateException("Unexpected todo status: " + todo.status());
         };
     }
 
@@ -140,11 +154,6 @@ public class TodoInspection extends LocalInspectionTool {
     @Override
     public JComponent createOptionsPanel() {
         return OptionDialogHelper.createOptionsPanel(this.options);
-    }
-
-    @Override
-    public @NotNull HighlightDisplayLevel getDefaultLevel() {
-        return HighlightDisplayLevel.WARNING;
     }
 
     private @NotNull InspectionOptions buildInspectionOptions() {
