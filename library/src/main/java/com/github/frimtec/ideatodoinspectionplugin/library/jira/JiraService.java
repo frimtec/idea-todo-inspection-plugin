@@ -28,6 +28,7 @@ public class JiraService {
 
     private final JiraRestService jiraRestService;
     private final String authorization;
+    private final boolean jiraConfigValid;
 
     public JiraService(
             String jiraBaseUrl,
@@ -35,16 +36,25 @@ public class JiraService {
             String apiToken,
             @Nullable TlsTrust tlsTrust
     ) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(jiraBaseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(httpClient(tlsTrust))
-                .build();
-        this.jiraRestService = retrofit.create(JiraRestService.class);
-        this.authorization = authorization(username, apiToken);
+        if (!jiraBaseUrl.endsWith("/")) {
+            jiraBaseUrl += "/";
+        }
+        this.jiraConfigValid = username != null && !username.isBlank() && apiToken != null && !apiToken.isBlank() && jiraBaseUrl.matches("^https?://.+");
+        if (this.jiraConfigValid) {
+            this.jiraRestService = new Retrofit.Builder()
+                    .baseUrl(jiraBaseUrl)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(httpClient(tlsTrust))
+                    .build().create(JiraRestService.class);
+            this.authorization = authorization(username, apiToken);
+        } else {
+            jiraRestService = null;
+            authorization = null;
+        }
     }
 
     JiraService(JiraRestService jiraRestService, String username, String apiToken) {
+        this.jiraConfigValid = true;
         this.jiraRestService = jiraRestService;
         this.authorization = authorization(username, apiToken);
     }
@@ -67,6 +77,9 @@ public class JiraService {
     }
 
     public Ticket loadTicket(String issueKey) {
+        if(!this.jiraConfigValid) {
+            return new ErrorTicket(issueKey, Ticket.Status.JIRA_CONFIGURATION_ERROR, "Jira configuration incorrect or missing");
+        }
         try {
             Response<JiraTicket> response = callRestService(issueKey);
             if (response.isSuccessful()) {

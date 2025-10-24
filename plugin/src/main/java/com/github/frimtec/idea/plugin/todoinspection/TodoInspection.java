@@ -21,12 +21,18 @@ import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.github.frimtec.idea.plugin.todoinspection.OptionDialogHelper.*;
 
 public class TodoInspection extends LocalInspectionTool {
 
     private final static Logger LOGGER = Logger.getInstance(MethodHandles.lookup().lookupClass());
+
+    private record ScannerEntry(InspectionOptions options, TodoScanner scanner) {
+    }
+
+    private final AtomicReference<ScannerEntry> scannerEntry = new AtomicReference<>();
 
     @SuppressWarnings({"WeakerAccess", "PublicField"})
     @NonNls
@@ -48,7 +54,6 @@ public class TodoInspection extends LocalInspectionTool {
     @SuppressWarnings({"WeakerAccess", "PublicField"})
     @NonNls
     public String jiraClosedStates = "Closed,Done,Resolved";
-
 
     private InspectionOptions inspectionOptions = buildInspectionOptions();
 
@@ -99,27 +104,32 @@ public class TodoInspection extends LocalInspectionTool {
     @NotNull
     @Override
     public PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
-        LOGGER.warn("Create new visitor: " + this.inspectionOptions);
-        CertificateManager certificateManager = CertificateManager.getInstance();
-        JiraService jiraService = new JiraService(
-                TodoInspection.this.jiraUrl,
-                TodoInspection.this.jiraUsername,
-                TodoInspection.this.jiraApiToken,
-                new JiraService.TlsTrust(
-                        certificateManager.getSslContext(),
-                        certificateManager.getTrustManager()
-                )
-        );
         return new PsiElementVisitor() {
-            final TodoScanner todoScanner = new TodoScanner(
-                    jiraService,
-                    split(TodoInspection.this.jiraProjectKeys),
-                    Ticket.statusMapper(split(TodoInspection.this.jiraClosedStates))
-            );
 
             @Override
             public void visitComment(@NotNull PsiComment comment) {
-                todoScanner.parseTodo(comment.getText()).forEach(todo -> {
+                var scannerEntry = TodoInspection.this.scannerEntry.get();
+                if (scannerEntry == null || !TodoInspection.this.inspectionOptions.equals(scannerEntry.options)) {
+                    CertificateManager certificateManager = CertificateManager.getInstance();
+                    LOGGER.warn("Initialize new TodoScanner with options: " + inspectionOptions);
+                    scannerEntry = new ScannerEntry(
+                            inspectionOptions,
+                            new TodoScanner(
+                                    new JiraService(
+                                            inspectionOptions.jiraUrl(),
+                                            inspectionOptions.jiraUsername(),
+                                            inspectionOptions.jiraApiToken(),
+                                            new JiraService.TlsTrust(
+                                                    certificateManager.getSslContext(),
+                                                    certificateManager.getTrustManager()
+                                            )
+                                    ),
+                                    split(TodoInspection.this.jiraProjectKeys),
+                                    Ticket.statusMapper(split(TodoInspection.this.jiraClosedStates)))
+                    );
+                    TodoInspection.this.scannerEntry.set(scannerEntry);
+                }
+                scannerEntry.scanner().parseTodo(comment.getText()).forEach(todo -> {
                     if (todo.type() == Todo.Type.FIXME && TodoInspection.this.allowFixme.equals("false")) {
                         holder.registerProblem(comment, convertToTextRange(todo.textRange()), "FIXME not allowed");
                     }
@@ -143,6 +153,7 @@ public class TodoInspection extends LocalInspectionTool {
             case NO_TICKET_REFERENCE -> "%s does not reference a ticket".formatted(todo.type());
             case UNKNOWN_TICKET_STATUS ->
                     "%s references a ticket for which the ticket status currently unknown".formatted(todo.type());
+            case JIRA_CONFIGURATION_ERROR -> "Missing or invalid Jira configuration";
             case CONSISTENT -> throw new IllegalStateException("Unexpected todo status: " + todo.status());
         };
     }

@@ -15,7 +15,8 @@ public class Todo {
         NO_TICKET_REFERENCE,
         INCONSISTENT_TICKET_NOT_EXISTING,
         INCONSISTENT_TICKET_DONE,
-        UNKNOWN_TICKET_STATUS
+        UNKNOWN_TICKET_STATUS,
+        JIRA_CONFIGURATION_ERROR
     }
 
     public record TextRange(int startOffset, int endOffset) {
@@ -36,6 +37,7 @@ public class Todo {
             case DONE -> TodoStatus.INCONSISTENT_TICKET_DONE;
             case NOT_EXISTING -> TodoStatus.INCONSISTENT_TICKET_NOT_EXISTING;
             case UNKNOWN -> TodoStatus.UNKNOWN_TICKET_STATUS;
+            case JIRA_CONFIGURATION_ERROR -> TodoStatus.JIRA_CONFIGURATION_ERROR;
         };
     }
 

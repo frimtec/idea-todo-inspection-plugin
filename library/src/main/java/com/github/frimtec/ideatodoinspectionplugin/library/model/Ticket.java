@@ -9,7 +9,8 @@ public interface Ticket {
         OPEN,
         DONE,
         NOT_EXISTING,
-        UNKNOWN
+        UNKNOWN,
+        JIRA_CONFIGURATION_ERROR
     }
 
     String key();
