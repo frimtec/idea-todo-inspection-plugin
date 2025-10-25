@@ -1,19 +1,19 @@
 package com.github.frimtec.idea.plugin.todoinspection;
 
 record InspectionOptions(
-        String allowFixme,
+        boolean allowFixme,
         String jiraUrl,
         String jiraUsername,
-        String jiraApiToken,
+        Encoder jiraApiToken,
         String jiraProjectKeys,
         String jiraClosedStates
 ) {
 
     static InspectionOptions of(
-            String allowFixme,
+            boolean allowFixme,
             String jiraUrl,
             String jiraUsername,
-            String jiraApiToken,
+            Encoder jiraApiToken,
             String jiraProjectKeys,
             String jiraClosedStates
     ) {

@@ -47,7 +47,7 @@ public class OptionDialogHelper {
         return new StringOption(label, propertyAccessor, propertySetter, true);
     }
 
-    static Option booleanOption(String label, Supplier<String> propertyAccessor, Consumer<String> propertySetter) {
+    static Option booleanOption(String label, Supplier<Boolean> propertyAccessor, Consumer<Boolean> propertySetter) {
         return new BooleanOption(label, propertyAccessor, propertySetter);
     }
 
@@ -66,12 +66,12 @@ public class OptionDialogHelper {
         }
     }
 
-    private record BooleanOption(String label, Supplier<String> propertyAccessor, Consumer<String> propertySetter) implements Option {
+    private record BooleanOption(String label, Supplier<Boolean> propertyAccessor, Consumer<Boolean> propertySetter) implements Option {
 
         @Override
         public JComponent component() {
-            JCheckBox field = new JCheckBox("", "true".equalsIgnoreCase(propertyAccessor.get()));
-            field.addActionListener(e -> propertySetter.accept(field.isSelected() ? "true" : "false"));
+            JCheckBox field = new JCheckBox("", propertyAccessor.get());
+            field.addActionListener(e -> propertySetter.accept(field.isSelected()));
             return field;
         }
     }

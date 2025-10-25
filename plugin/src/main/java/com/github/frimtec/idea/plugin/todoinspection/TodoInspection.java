@@ -36,7 +36,7 @@ public class TodoInspection extends LocalInspectionTool {
 
     @SuppressWarnings({"WeakerAccess", "PublicField"})
     @NonNls
-    public String allowFixme = "false";
+    public boolean allowFixme = false;
 
     @SuppressWarnings({"WeakerAccess", "PublicField"})
     @NonNls
@@ -70,8 +70,8 @@ public class TodoInspection extends LocalInspectionTool {
                 this.jiraUsername = value;
                 this.inspectionOptions = buildInspectionOptions();
             }),
-            secretOption("Jira API-Token", () -> this.jiraApiToken, (value) -> {
-                this.jiraApiToken = value;
+            secretOption("Jira API-Token", () -> new Encoder(this.jiraApiToken).plain(), (value) -> {
+                this.jiraApiToken = Encoder.fromPlain(value).encodedValue();
                 this.inspectionOptions = buildInspectionOptions();
             }),
             textOption("Jira Project Keys", () -> this.jiraProjectKeys, (value) -> {
@@ -95,7 +95,7 @@ public class TodoInspection extends LocalInspectionTool {
         this.allowFixme = this.inspectionOptions.allowFixme();
         this.jiraUrl = this.inspectionOptions.jiraUrl();
         this.jiraUsername = this.inspectionOptions.jiraUsername();
-        this.jiraApiToken = this.inspectionOptions.jiraApiToken();
+        this.jiraApiToken = this.inspectionOptions.jiraApiToken().encodedValue();
         this.jiraProjectKeys = this.inspectionOptions.jiraProjectKeys();
         this.jiraClosedStates = this.inspectionOptions.jiraClosedStates();
         super.writeSettings(node);
@@ -118,7 +118,7 @@ public class TodoInspection extends LocalInspectionTool {
                                     new JiraService(
                                             inspectionOptions.jiraUrl(),
                                             inspectionOptions.jiraUsername(),
-                                            inspectionOptions.jiraApiToken(),
+                                            inspectionOptions.jiraApiToken().plain(),
                                             new JiraService.TlsTrust(
                                                     certificateManager.getSslContext(),
                                                     certificateManager.getTrustManager()
@@ -130,7 +130,7 @@ public class TodoInspection extends LocalInspectionTool {
                     TodoInspection.this.scannerEntry.set(scannerEntry);
                 }
                 scannerEntry.scanner().parseTodo(comment.getText()).forEach(todo -> {
-                    if (todo.type() == Todo.Type.FIXME && TodoInspection.this.allowFixme.equals("false")) {
+                    if (todo.type() == Todo.Type.FIXME && !TodoInspection.this.allowFixme) {
                         holder.registerProblem(comment, convertToTextRange(todo.textRange()), "FIXME not allowed");
                     }
                     if (todo.status() != Todo.TodoStatus.CONSISTENT) {
@@ -172,7 +172,7 @@ public class TodoInspection extends LocalInspectionTool {
                 this.allowFixme,
                 this.jiraUrl,
                 this.jiraUsername,
-                this.jiraApiToken,
+                new Encoder(this.jiraApiToken),
                 this.jiraProjectKeys,
                 this.jiraClosedStates
         );
