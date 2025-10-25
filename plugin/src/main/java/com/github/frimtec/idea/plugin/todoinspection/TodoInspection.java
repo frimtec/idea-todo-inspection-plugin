@@ -3,8 +3,10 @@ package com.github.frimtec.idea.plugin.todoinspection;
 import com.github.frimtec.ideatodoinspectionplugin.library.jira.JiraService;
 import com.github.frimtec.ideatodoinspectionplugin.library.model.Ticket;
 import com.github.frimtec.ideatodoinspectionplugin.library.model.Todo;
+import com.github.frimtec.ideatodoinspectionplugin.library.model.Todo.TodoStatus;
 import com.github.frimtec.ideatodoinspectionplugin.library.scanner.TodoScanner;
 import com.intellij.codeInspection.LocalInspectionTool;
+import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.codeInspection.util.InspectionMessage;
 import com.intellij.openapi.diagnostic.Logger;
@@ -28,6 +30,11 @@ import static com.github.frimtec.idea.plugin.todoinspection.OptionDialogHelper.*
 public class TodoInspection extends LocalInspectionTool {
 
     private final static Logger LOGGER = Logger.getInstance(MethodHandles.lookup().lookupClass());
+
+    private static final Set<TodoStatus> STATES_WITH_EXISTING_TICKET = Set.of(
+            TodoStatus.INCONSISTENT_TICKET_DONE,
+            TodoStatus.CONSISTENT
+    );
 
     private record ScannerEntry(InspectionOptions options, TodoScanner scanner) {
     }
@@ -130,14 +137,26 @@ public class TodoInspection extends LocalInspectionTool {
                     TodoInspection.this.scannerEntry.set(scannerEntry);
                 }
                 scannerEntry.scanner().parseTodo(comment.getText()).forEach(todo -> {
+                    AtomicReference<LocalQuickFix> quickFix = new AtomicReference<>();
+                    todo.ticket().ifPresent(
+                            ticket ->
+                                    quickFix.set(STATES_WITH_EXISTING_TICKET.contains(todo.status()) ?
+                                            new OpenInBrowserQuickFix(TodoInspection.this.inspectionOptions.jiraUrl(), ticket.key()) : null)
+                    );
                     if (todo.type() == Todo.Type.FIXME && !TodoInspection.this.allowFixme) {
-                        holder.registerProblem(comment, convertToTextRange(todo.textRange()), "FIXME not allowed");
-                    }
-                    if (todo.status() != Todo.TodoStatus.CONSISTENT) {
                         holder.registerProblem(
                                 comment,
                                 convertToTextRange(todo.textRange()),
-                                formatWarnMessage(todo)
+                                "FIXME not allowed",
+                                quickFix.get()
+                        );
+                    }
+                    if (todo.status() != TodoStatus.CONSISTENT) {
+                        holder.registerProblem(
+                                comment,
+                                convertToTextRange(todo.textRange()),
+                                formatMessage(todo),
+                                quickFix.get()
                         );
                     }
                 });
@@ -145,7 +164,7 @@ public class TodoInspection extends LocalInspectionTool {
         };
     }
 
-    private @NotNull @InspectionMessage String formatWarnMessage(Todo todo) {
+    private @NotNull @InspectionMessage String formatMessage(Todo todo) {
         return switch (todo.status()) {
             case INCONSISTENT_TICKET_DONE -> "%s references a ticket which is already done".formatted(todo.type());
             case INCONSISTENT_TICKET_NOT_EXISTING ->
