@@ -22,8 +22,7 @@ jobs:
 
       - name: Set release version
         run: |
-          git checkout -- gradle.properties 
-          sed -i 's/0-SNAPSHOT/0.2.2/g' gradle.properties
+          sed -i 's/0-SNAPSHOT/${{ steps.get_version.outputs.VERSION }}/g' gradle.properties
 
       # Setup Java environment for the next steps
       - name: Set up Java
