@@ -16,6 +16,10 @@
 
 ### Security
 
+## 0.2.3 - 2025-10-25
+
+- Improve build and release workflows
+
 ## 0.2.2 - 2025-10-25
 
 - Improve build and release workflows
