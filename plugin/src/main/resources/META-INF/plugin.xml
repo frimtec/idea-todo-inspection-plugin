@@ -4,7 +4,7 @@
 
     <vendor email="frimtec@gmx.ch" url="https://github.com/frimtec">frimTEC</vendor>
     <description><![CDATA[
-        Reports all TODO comments that refer to a closed/resolved ticket or leak a JIRA ticket reference completely.
+        Reports TODO/FIXME comments that are missing a Jira ticket reference or that point to a ticket that is closed, resolved, or non-existent.
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
