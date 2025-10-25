@@ -16,6 +16,10 @@
 
 ### Security
 
+## 0.2.1 - 2025-10-25
+
+- Add open ticket quick-fix
+
 ## 0.2.0 - 2025-10-25
 
 - Improve settings serialization
