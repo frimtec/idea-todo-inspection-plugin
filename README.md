@@ -27,6 +27,8 @@ This plugin provides real-time feedback by marking `TODO` or `FIXME` comments in
 * The referenced Jira ticket is already in a closed state.
 * Jira is not accessible due to configuration issues or system unavailability.
 
+![Warnings](images/warning.png)
+
 ### Examples
 
 <table>
@@ -73,6 +75,7 @@ This plugin provides real-time feedback by marking `TODO` or `FIXME` comments in
 
 ### 🛠️ Configuration
 
+![Configuration](images/config.png)
 Configure the plugin under <kbd>Settings</kbd> > <kbd>Editor</kbd> > <kbd>Inspections</kbd> > <kbd>General</kbd> > <kbd>TODO comment (enhanced)</kbd>.
 
 The following settings are available:
