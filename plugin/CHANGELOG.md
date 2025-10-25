@@ -16,6 +16,10 @@
 
 ### Security
 
+## 0.2.0 - 2025-10-25
+
+- Improve settings serialization
+
 ## 0.1.0 - 2025-10-24
 
 - Automate build and release workflows
