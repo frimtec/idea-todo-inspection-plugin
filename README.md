@@ -14,56 +14,77 @@
 ## 💡 Overview
 
 <!-- Plugin description -->
-The `TODO Inspection Plugin` is an IntelliJ-IDEA plugin, designed to enhance the standard TODO inspection mechanism by
-integrating with a Jira ticketing system.
+The `TODO Inspection Plugin` is an IntelliJ IDEA plugin designed to enhance the standard TODO inspection mechanism by integrating with a Jira ticketing system.
 
-It solves a common problem that developers leaving `TODO`-comments in the code, referencing tickets, only for that
-ticket to be closed later, leaving the technical debt forgotten. 
-This plugin ensures that your `TODO`'s are always relevant and actionable, surfacing warnings when a linked ticket is already complete.
+It solves a common problem where developers leave `TODO` comments in the code referencing tickets, only for those tickets to be closed later, leaving the technical debt forgotten. This plugin ensures that your `TODO`s are always relevant and actionable by surfacing warnings when a linked ticket is already complete.
 <!-- Plugin description end -->
 
 ## ✨ Features
 
 This plugin provides real-time feedback by marking `TODO` or `FIXME` comments in the editor if:
-* No Jira ticket is referenced from the `TODO` comment.
-* The referenced Jira ticket is already closed.
+* No Jira ticket is referenced.
+* The referenced Jira ticket does not exist.
+* The referenced Jira ticket is already in a closed state.
 * Jira is not accessible due to configuration issues or system unavailability.
 
-![Warnings](images/warning.png)
+### Examples
 
-Examples:
+<table>
+  <thead>
+    <tr>
+      <th>Code Comment</th>
+      <th>Status in JIRA</th>
+      <th>Plugin Behavior</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>// TODO PROJECT-123 Fix race condition</code></td>
+      <td>In Progress</td>
+      <td>No Warning</td>
+    </tr>
+    <tr>
+      <td><code>// TODO PROJECT-123 Fix race condition</code></td>
+      <td>Closed</td>
+      <td>Warning: <code>TODO references a ticket which is already done</code></td>
+    </tr>
+    <tr>
+      <td><code>// TODO PROJECT-1239999 Fix race condition</code></td>
+      <td>n/a</td>
+      <td>Warning:  <code>TODO references a ticket that does not exist</code></td>
+    </tr>
+    <tr>
+      <td><code>// TODO Update API</code></td>
+      <td>n/a</td>
+      <td>Warning: <code>TODO does not reference a ticket</code></td>
+    </tr>
+  </tbody>
+</table>
 
-| Code Comment                                 | Status in JIRA | Plugin Behavior                                           |
-|----------------------------------------------|----------------|-----------------------------------------------------------|
-| `// TODO PROJECT-123 Fix race condition`     | In Progress    | No Warning                                                |
-| `// TODO PROJECT-123 Fix race condition`     | Closed         | Warning: `TODO references a ticket which is already done` |
-| `// TODO PROJECT-1239999 Fix race condition` | n/a            | Warning:  `TODO references a ticket that does not exist`  |
-| `// TODO Update API`                         | n/a            | Warning: `TODO does not reference a ticket`               |
 
 ### ⬇️ Installation
-- Using IDE built-in plugin system:
+- **Using IDE built-in plugin system:**
   <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "Todo Inspection"</kbd> >
   <kbd>Install Plugin</kbd>
 
-- Manually:
+- **Manually:**
   Download the [latest release][latest-release] and install it manually using
   <kbd>Settings</kbd> > <kbd>Plugins</kbd> > <kbd>⚙</kbd> > <kbd>Install plugin from disk...</kbd>
 
 ### 🛠️ Configuration
 
-The configuration is done under <kbd>Settings</kbd> > <kbd>Editor</kbd> > <kbd>Inspections</kbd> > <kbd>General</kbd> > <kbd>TODO comment (enhanced)</kbd>:
-![Configuration](images/config.png)
+Configure the plugin under <kbd>Settings</kbd> > <kbd>Editor</kbd> > <kbd>Inspections</kbd> > <kbd>General</kbd> > <kbd>TODO comment (enhanced)</kbd>.
 
 The following settings are available:
 
-| Setting            | Comment                                                                                               | Default Value        |
-|--------------------|-------------------------------------------------------------------------------------------------------|----------------------|
-| Allow FIXME        | If unchecked all `FIXME`'s are marked as warning, otherwise `FIXME`'s are handled the same way as `TODO`'s. | `unchecked`          |
-| Jira URL           | URL of your Jira instance.                                                                            |                      |
-| Jira Username      | Username of a Jira account (requires read access to tickets only).                                    |                      |
-| Jira API-Token     | API token or password of used Jira account.                                                           |                      |
-| Jira Project Keys  | Comma seperated list of all Jira project IDs to be used.                                              |                      |
-| Jira Closed States | Comma seperated list of Jira states treated as closed.                                                | Closed,Done,Resolved |
+| Setting            | Description                                                                                             | Default Value        |
+|--------------------|---------------------------------------------------------------------------------------------------------|----------------------|
+| Allow FIXME        | If unchecked, all `FIXME`s are marked as a warning. Otherwise, `FIXME`s are handled the same way as `TODO`s. | `unchecked`          |
+| Jira URL           | URL of your Jira instance.                                                                              |                      |
+| Jira Username      | Username for a Jira account (requires read access to tickets only).                                     |                      |
+| Jira API-Token     | API token or password for the Jira account.                                                             |                      |
+| Jira Project Keys  | Comma-separated list of all Jira project keys to be used.                                              |                      |
+| Jira Closed States | Comma-separated list of Jira states to be treated as closed.                                           | Closed,Done,Resolved |
 
 [license-shield]: https://img.shields.io/github/license/frimtec/idea-todo-inspection-plugin.svg
 [license]: https://opensource.org/licenses/Apache-2.0
