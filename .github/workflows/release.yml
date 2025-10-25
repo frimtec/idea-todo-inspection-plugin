@@ -16,6 +16,14 @@ jobs:
         with:
           ref: ${{ github.event.release.tag_name }}
 
+      - name: Get release version
+        id: get_version
+        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
+
+      - name: Set release version
+        run: |
+          sed -i 's/0-SNAPSHOT/0.2.2/g' gradle.properties
+
       # Setup Java environment for the next steps
       - name: Set up Java
         uses: actions/setup-java@v5
