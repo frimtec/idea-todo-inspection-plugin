@@ -16,6 +16,11 @@
 
 ### Security
 
+## 0.3.0 - 2025-10-26
+
+- Add quick fix `Convert FIXME to TODO`
+- Add quick fix `Delete TODO/FIXME`
+
 ## 0.2.3 - 2025-10-25
 
 - Improve build and release workflows
