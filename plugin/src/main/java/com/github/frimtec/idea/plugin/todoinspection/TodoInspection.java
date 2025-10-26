@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -137,18 +138,19 @@ public class TodoInspection extends LocalInspectionTool {
                     TodoInspection.this.scannerEntry.set(scannerEntry);
                 }
                 scannerEntry.scanner().parseTodo(comment.getText()).forEach(todo -> {
-                    AtomicReference<LocalQuickFix> quickFix = new AtomicReference<>();
+                    List<LocalQuickFix> quickFixes = new ArrayList<>();
                     todo.ticket().ifPresent(
                             ticket ->
-                                    quickFix.set(STATES_WITH_EXISTING_TICKET.contains(todo.status()) ?
-                                            new OpenInBrowserQuickFix(TodoInspection.this.inspectionOptions.jiraUrl(), ticket.key()) : null)
+                                    quickFixes.add(STATES_WITH_EXISTING_TICKET.contains(todo.status()) ?
+                                            new OpenTicketInBrowserQuickFix(TodoInspection.this.inspectionOptions.jiraUrl(), ticket.key()) : null)
                     );
                     if (todo.type() == Todo.Type.FIXME && !TodoInspection.this.allowFixme) {
+                        quickFixes.add(new FixMeToTodoQuickFix(comment.getContainingFile().getFileDocument(), comment.getTextOffset(), todo.textRange()));
                         holder.registerProblem(
                                 comment,
                                 convertToTextRange(todo.textRange()),
                                 "FIXME not allowed",
-                                quickFix.get()
+                                quickFixes.toArray(LocalQuickFix[]::new)
                         );
                     }
                     if (todo.status() != TodoStatus.CONSISTENT) {
@@ -156,7 +158,7 @@ public class TodoInspection extends LocalInspectionTool {
                                 comment,
                                 convertToTextRange(todo.textRange()),
                                 formatMessage(todo),
-                                quickFix.get()
+                                quickFixes.toArray(LocalQuickFix[]::new)
                         );
                     }
                 });
