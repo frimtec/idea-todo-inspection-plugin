@@ -1,4 +1,4 @@
-package com.github.frimtec.idea.plugin.todoinspection;
+package com.github.frimtec.idea.plugin.todoinspection.quickfix;
 
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
@@ -7,14 +7,12 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
-class OpenTicketInBrowserQuickFix implements LocalQuickFix {
+public class OpenTicketInBrowserQuickFix implements LocalQuickFix {
 
     private final String jiraUrl;
     private final String ticketKey;
 
-    OpenTicketInBrowserQuickFix(String jiraUrl, String ticketKey) {
+    public OpenTicketInBrowserQuickFix(String jiraUrl, String ticketKey) {
         this.jiraUrl = jiraUrl;
         this.ticketKey = ticketKey;
     }

@@ -1,5 +1,8 @@
 package com.github.frimtec.idea.plugin.todoinspection;
 
+import com.github.frimtec.idea.plugin.todoinspection.quickfix.DeleteTodoQuickFix;
+import com.github.frimtec.idea.plugin.todoinspection.quickfix.FixMeToTodoQuickFix;
+import com.github.frimtec.idea.plugin.todoinspection.quickfix.OpenTicketInBrowserQuickFix;
 import com.github.frimtec.ideatodoinspectionplugin.library.jira.JiraService;
 import com.github.frimtec.ideatodoinspectionplugin.library.model.Ticket;
 import com.github.frimtec.ideatodoinspectionplugin.library.model.Todo;
@@ -144,9 +147,9 @@ public class TodoInspection extends LocalInspectionTool {
                                     quickFixes.add(STATES_WITH_EXISTING_TICKET.contains(todo.status()) ?
                                             new OpenTicketInBrowserQuickFix(TodoInspection.this.inspectionOptions.jiraUrl(), ticket.key()) : null)
                     );
-                    quickFixes.add(new DeleteTodoQuickFix(comment.getContainingFile().getFileDocument(), comment.getTextOffset(), todo.textRange(), todo.type()));
+                    quickFixes.add(new DeleteTodoQuickFix(comment, todo.textRange(), todo.type()));
                     if (todo.type() == Todo.Type.FIXME && !TodoInspection.this.allowFixme) {
-                        quickFixes.add(new FixMeToTodoQuickFix(comment.getContainingFile().getFileDocument(), comment.getTextOffset(), todo.textRange()));
+                        quickFixes.add(new FixMeToTodoQuickFix(comment, todo.textRange()));
                         holder.registerProblem(
                                 comment,
                                 convertToTextRange(todo.textRange()),
