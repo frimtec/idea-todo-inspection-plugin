@@ -7,7 +7,17 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
-record OpenTicketInBrowserQuickFix(String jiraUrl, String ticketKey) implements LocalQuickFix {
+import java.util.Objects;
+
+class OpenTicketInBrowserQuickFix implements LocalQuickFix {
+
+    private final String jiraUrl;
+    private final String ticketKey;
+
+    OpenTicketInBrowserQuickFix(String jiraUrl, String ticketKey) {
+        this.jiraUrl = jiraUrl;
+        this.ticketKey = ticketKey;
+    }
 
     @NotNull
     @Override

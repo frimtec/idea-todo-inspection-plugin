@@ -144,6 +144,7 @@ public class TodoInspection extends LocalInspectionTool {
                                     quickFixes.add(STATES_WITH_EXISTING_TICKET.contains(todo.status()) ?
                                             new OpenTicketInBrowserQuickFix(TodoInspection.this.inspectionOptions.jiraUrl(), ticket.key()) : null)
                     );
+                    quickFixes.add(new DeleteTodoQuickFix(comment.getContainingFile().getFileDocument(), comment.getTextOffset(), todo.textRange(), todo.type()));
                     if (todo.type() == Todo.Type.FIXME && !TodoInspection.this.allowFixme) {
                         quickFixes.add(new FixMeToTodoQuickFix(comment.getContainingFile().getFileDocument(), comment.getTextOffset(), todo.textRange()));
                         holder.registerProblem(
