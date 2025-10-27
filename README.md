@@ -89,6 +89,11 @@ The following settings are available:
 | Jira Project Keys  | Comma-separated list of all Jira project keys to be used.                                              |                      |
 | Jira Closed States | Comma-separated list of Jira states to be treated as closed.                                           | Closed,Done,Resolved |
 
+
+### 🏆 Credits
+* [SIX Group](https://github.com/six-group): For the code-camp 2025 (where this plugin was initially developed).
+* [rcs80](https://github.com/rsc80): For the `todo-report-maven-plugin` which delivered the idea to have an inspection for todo's directly in IntelliJ IDEA.
+
 [license-shield]: https://img.shields.io/github/license/frimtec/idea-todo-inspection-plugin.svg
 [license]: https://opensource.org/licenses/Apache-2.0
 [maintenance-shield]: https://img.shields.io/maintenance/yes/2025.svg
