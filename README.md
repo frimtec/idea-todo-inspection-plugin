@@ -9,7 +9,7 @@
 [![Build Status][build-status-shield]][build-status]
 [![Deploy Status][deploy-status-shield]][deploy-status]
 
-![Icon](plugin/src/main/resources/META-INF/pluginIcon.svg)
+![Icon](todo-inspection/src/main/resources/META-INF/pluginIcon.svg)
 
 ## 💡 Overview
 
