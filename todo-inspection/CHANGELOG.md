@@ -16,6 +16,14 @@
 
 ### Security
 
+## 0.3.1 - 2025-10-28
+
+- Fix plugin installation folder name
+- Bump com.google.code.gson:gson from 2.11.0 to 2.13.2
+- Bump actions/upload-artifact from 4 to 5
+- Bump com.squareup.retrofit2:retrofit from 2.9.0 to 3.0.0
+- Bump org.jetbrains.kotlin.jvm from 2.1.0 to 2.2.21
+
 ## 0.3.0 - 2025-10-26
 
 - Add quick fix `Convert FIXME to TODO`
