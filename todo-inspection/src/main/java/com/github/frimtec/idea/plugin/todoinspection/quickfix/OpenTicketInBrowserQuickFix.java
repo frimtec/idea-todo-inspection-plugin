@@ -7,6 +7,8 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
+import static com.github.frimtec.idea.plugin.todoinspection.quickfix.QuickFixPriority.orderedLabel;
+
 public class OpenTicketInBrowserQuickFix implements LocalQuickFix {
 
     private final String jiraUrl;
@@ -20,13 +22,13 @@ public class OpenTicketInBrowserQuickFix implements LocalQuickFix {
     @NotNull
     @Override
     public String getName() {
-        return "Open ticket";
+        return orderedLabel(QuickFixPriority.HIGH, "Open ticket");
     }
 
     @NotNull
     @Override
     public @IntentionFamilyName String getFamilyName() {
-        return "Open in browser";
+        return getName();
     }
 
     @Override
