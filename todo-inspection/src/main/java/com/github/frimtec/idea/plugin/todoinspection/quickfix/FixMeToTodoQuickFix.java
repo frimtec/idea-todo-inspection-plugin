@@ -11,6 +11,8 @@ import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static com.github.frimtec.idea.plugin.todoinspection.quickfix.QuickFixPriority.orderedLabel;
+
 public class FixMeToTodoQuickFix extends LocalQuickFixAndIntentionActionOnPsiElement {
 
     private final TextRange todoTextRange;
@@ -23,13 +25,13 @@ public class FixMeToTodoQuickFix extends LocalQuickFixAndIntentionActionOnPsiEle
     @NotNull
     @Override
     public String getText() {
-        return "Convert FIXME to TODO";
+        return orderedLabel(QuickFixPriority.MEDIUM, "Convert FIXME to TODO");
     }
 
     @NotNull
     @Override
     public @IntentionFamilyName String getFamilyName() {
-        return "Convert";
+        return getText();
     }
 
     @Override

@@ -12,6 +12,8 @@ import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static com.github.frimtec.idea.plugin.todoinspection.quickfix.QuickFixPriority.orderedLabel;
+
 public class DeleteTodoQuickFix extends LocalQuickFixAndIntentionActionOnPsiElement {
 
     private final TextRange todoTextRange;
@@ -26,13 +28,13 @@ public class DeleteTodoQuickFix extends LocalQuickFixAndIntentionActionOnPsiElem
     @NotNull
     @Override
     public String getText() {
-        return "Delete " + this.type;
+        return orderedLabel(QuickFixPriority.LOW, "Delete " + this.type);
     }
 
     @NotNull
     @Override
     public @IntentionFamilyName String getFamilyName() {
-        return "Delete";
+        return getText();
     }
 
     @Override
