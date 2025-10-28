@@ -26,7 +26,7 @@ dependencies {
         create(providers.gradleProperty("platformType"), providers.gradleProperty("platformVersion"))
         testFramework(org.jetbrains.intellij.platform.gradle.TestFrameworkType.Platform)
 
-        implementation(project(":library"))
+        implementation(project(":todo-library"))
     }
 }
 

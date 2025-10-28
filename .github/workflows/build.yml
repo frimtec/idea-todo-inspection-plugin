@@ -43,9 +43,9 @@ jobs:
         id: properties
         shell: bash
         run: |
-          PROPERTIES="$(./gradlew properties -p plugin --console=plain -q)"
+          PROPERTIES="$(./gradlew properties -p todo-inspection --console=plain -q)"
           VERSION="$(echo "$PROPERTIES" | grep "^version:" | cut -f2- -d ' ')"
-          CHANGELOG="$(./gradlew getChangelog -p plugin --unreleased --no-header --console=plain -q)"
+          CHANGELOG="$(./gradlew getChangelog -p todo-inspection --unreleased --no-header --console=plain -q)"
 
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "pluginVerifierHomeDir=~/.pluginVerifier" >> $GITHUB_OUTPUT
@@ -63,7 +63,7 @@ jobs:
         id: artifact
         shell: bash
         run: |
-          cd ${{ github.workspace }}/plugin/build/distributions
+          cd ${{ github.workspace }}/todo-inspection/build/distributions
           FILENAME=`ls *.zip`
           unzip "$FILENAME" -d content
 
@@ -74,7 +74,7 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: ${{ steps.artifact.outputs.filename }}
-          path: ./plugin/build/distributions/content/*/*
+          path: ./todo-inspection/build/distributions/content/*/*
 
   # Run tests and upload a code coverage report
   test:

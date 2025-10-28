@@ -1,2 +1,2 @@
 rootProject.name = "idea-todo-inspection-plugin"
-include("plugin", "library")
+include("todo-inspection", "todo-library")
