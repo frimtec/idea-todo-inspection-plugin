@@ -13,6 +13,7 @@ import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.codeInspection.util.InspectionMessage;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElementVisitor;
@@ -69,29 +70,71 @@ public class TodoInspection extends LocalInspectionTool {
     private InspectionOptions inspectionOptions = buildInspectionOptions();
 
     private final List<OptionDialogHelper.Option> options = List.of(
-            booleanOption("Allow FIXME", () -> this.allowFixme, (value) -> {
-                this.allowFixme = value;
-                this.inspectionOptions = buildInspectionOptions();
-            }),
-            textOption("Jira URL", () -> this.jiraUrl, (value) -> {
-                this.jiraUrl = value;
-                this.inspectionOptions = buildInspectionOptions();
-            }),
-            textOption("Jira Username", () -> this.jiraUsername, (value) -> {
-                this.jiraUsername = value;
-                this.inspectionOptions = buildInspectionOptions();
-            }),
-            secretOption("Jira API-Token", () -> new Encoder(this.jiraApiToken).plain(), (value) -> {
-                this.jiraApiToken = Encoder.fromPlain(value).encodedValue();
-                this.inspectionOptions = buildInspectionOptions();
-            }),
-            textOption("Jira Project Keys", () -> this.jiraProjectKeys, (value) -> {
-                this.jiraProjectKeys = value;
-                this.inspectionOptions = buildInspectionOptions();
-            }),
-            textOption("Jira Closed States", () -> this.jiraClosedStates, (value) -> {
-                this.jiraClosedStates = value;
-                this.inspectionOptions = buildInspectionOptions();
+            booleanOption(
+                    "Allow FIXME",
+                    "FIXME treated same as TODO",
+                    "FIXME not allowed",
+                    () -> this.allowFixme, (value) -> {
+                        this.allowFixme = value;
+                        this.inspectionOptions = buildInspectionOptions();
+                    }
+            ),
+            textOption(
+                    "Jira Project Keys",
+                    "Comma separated list of Jira project-keys used to find ticket-IDs in the TODO comments.",
+                    () -> this.jiraProjectKeys, (value) -> {
+                        this.jiraProjectKeys = value;
+                        this.inspectionOptions = buildInspectionOptions();
+                    }
+            ),
+            textOption(
+                    "Jira Closed States",
+                    "Comma separated list of ticket status to consider as closed.",
+                    () -> this.jiraClosedStates, (value) -> {
+                        this.jiraClosedStates = value;
+                        this.inspectionOptions = buildInspectionOptions();
+                    }
+            ),
+            separator(),
+            textOption(
+                    "Jira URL",
+                    "The Jira base-url which can be used to query the Jira API.",
+                    () -> this.jiraUrl, (value) -> {
+                        this.jiraUrl = value;
+                        this.inspectionOptions = buildInspectionOptions();
+                    }
+            ),
+            textOption(
+                    "Jira Username",
+                    "Username for a Jira user account to be used to query the Jira API (requires only read access to your Jira projects).",
+                    () -> this.jiraUsername, (value) -> {
+                        this.jiraUsername = value;
+                        this.inspectionOptions = buildInspectionOptions();
+                    }
+            ),
+            secretOption(
+                    "Jira API-Token",
+                    "API token or password for the configured Jira user account.",
+                    () -> new Encoder(this.jiraApiToken).plain(), (value) -> {
+                        this.jiraApiToken = Encoder.fromPlain(value).encodedValue();
+                        this.inspectionOptions = buildInspectionOptions();
+                    }
+            ),
+            action("Test connection", button -> {
+                button.setEnabled(false);
+                try {
+                    String testProjectId = "CONNECTIONTEST";
+                    TodoScanner scanner = new TodoScanner(createJiraService(), Set.of(testProjectId), Ticket.statusMapper(Set.of()));
+                    boolean isConnectionSuccessful = scanner.testConnection("%s-0".formatted(testProjectId));
+                    String title = "Jira Connection Test";
+                    if (isConnectionSuccessful) {
+                        Messages.showInfoMessage("Connection successful.", title);
+                    } else {
+                        Messages.showWarningDialog("Connection failed!", title);
+                    }
+                } finally {
+                    button.setEnabled(true);
+                }
             })
     );
 
@@ -121,20 +164,11 @@ public class TodoInspection extends LocalInspectionTool {
             public void visitComment(@NotNull PsiComment comment) {
                 var scannerEntry = TodoInspection.this.scannerEntry.get();
                 if (scannerEntry == null || !TodoInspection.this.inspectionOptions.equals(scannerEntry.options)) {
-                    CertificateManager certificateManager = CertificateManager.getInstance();
                     LOGGER.info("Initialize new TodoScanner with options: " + inspectionOptions);
                     scannerEntry = new ScannerEntry(
                             inspectionOptions,
                             new TodoScanner(
-                                    new JiraService(
-                                            inspectionOptions.jiraUrl(),
-                                            inspectionOptions.jiraUsername(),
-                                            inspectionOptions.jiraApiToken().plain(),
-                                            new JiraService.TlsTrust(
-                                                    certificateManager.getSslContext(),
-                                                    certificateManager.getTrustManager()
-                                            )
-                                    ),
+                                    createJiraService(),
                                     split(TodoInspection.this.jiraProjectKeys),
                                     Ticket.statusMapper(split(TodoInspection.this.jiraClosedStates)))
                     );
@@ -168,6 +202,19 @@ public class TodoInspection extends LocalInspectionTool {
                 });
             }
         };
+    }
+
+    private @NotNull JiraService createJiraService() {
+        CertificateManager certificateManager = CertificateManager.getInstance();
+        return new JiraService(
+                inspectionOptions.jiraUrl(),
+                inspectionOptions.jiraUsername(),
+                inspectionOptions.jiraApiToken().plain(),
+                new JiraService.TlsTrust(
+                        certificateManager.getSslContext(),
+                        certificateManager.getTrustManager()
+                )
+        );
     }
 
     private @NotNull @InspectionMessage String formatMessage(Todo todo) {

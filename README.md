@@ -14,14 +14,18 @@
 ## 💡 Overview
 
 <!-- Plugin description -->
-The `TODO Inspection Plugin` is an IntelliJ IDEA plugin designed to enhance the standard TODO inspection mechanism by integrating with a Jira ticketing system.
+The `TODO Inspection Plugin` is an IntelliJ IDEA plugin designed to enhance the standard TODO inspection mechanism by
+integrating with a Jira ticketing system.
 
-It solves a common problem where developers leave `TODO` comments in the code referencing tickets, only for those tickets to be closed later, leaving the technical debt forgotten. This plugin ensures that your `TODO`s are always relevant and actionable by surfacing warnings when a linked ticket is already complete.
+It solves a common problem where developers leave `TODO` comments in the code referencing tickets, only for those
+tickets to be closed later, leaving the technical debt forgotten. This plugin ensures that your `TODO`s are always
+relevant and actionable by surfacing warnings when a linked ticket is already complete.
 <!-- Plugin description end -->
 
 ## ✨ Features
 
 This plugin provides real-time feedback by marking `TODO` or `FIXME` comments in the editor if:
+
 * No Jira ticket is referenced.
 * The referenced Jira ticket does not exist.
 * The referenced Jira ticket is already in a closed state.
@@ -63,8 +67,8 @@ This plugin provides real-time feedback by marking `TODO` or `FIXME` comments in
   </tbody>
 </table>
 
-
 ### ⬇️ Installation
+
 - **Using IDE built-in plugin system:**
   <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "Todo Inspection"</kbd> >
   <kbd>Install Plugin</kbd>
@@ -80,17 +84,17 @@ Configure the plugin under <kbd>Settings</kbd> > <kbd>Editor</kbd> > <kbd>Inspec
 
 The following settings are available:
 
-| Setting            | Description                                                                                             | Default Value        |
-|--------------------|---------------------------------------------------------------------------------------------------------|----------------------|
-| Allow FIXME        | If unchecked, all `FIXME`s are marked as a warning. Otherwise, `FIXME`s are handled the same way as `TODO`s. | `unchecked`          |
-| Jira URL           | URL of your Jira instance.                                                                              |                      |
-| Jira Username      | Username for a Jira account (requires read access to tickets only).                                     |                      |
-| Jira API-Token     | API token or password for the Jira account.                                                             |                      |
-| Jira Project Keys  | Comma-separated list of all Jira project keys to be used.                                              |                      |
-| Jira Closed States | Comma-separated list of Jira states to be treated as closed.                                           | Closed,Done,Resolved |
-
+| Setting            | Description                                                                                                          | Default Value        |
+|--------------------|----------------------------------------------------------------------------------------------------------------------|----------------------|
+| Allow FIXME        | If unchecked, all `FIXME`s are marked as a warning. Otherwise, `FIXME`s are handled the same way as `TODO`s.         | `unchecked`          |
+| Jira Project Keys  | Comma separated list of Jira project-keys used to find ticket-IDs in the TODO comments.                              |                      |
+| Jira Closed States | Comma separated list of ticket status to consider as closed.                                                         | Closed,Done,Resolved |
+| Jira URL           | The Jira base-url which can be used to query the Jira API.                                                           |                      |
+| Jira Username      | Username for a Jira user account to be used to query the Jira API (requires only read access to your Jira projects). |                      |
+| Jira API-Token     | API token or password for the configured Jira user account.                                                          |                      |
 
 ### 🏆 Credits
+
 * [SIX Group](https://github.com/six-group): For the code-camp 2025 (where this plugin was initially developed).
 * [rcs80](https://github.com/rsc80): For the `todo-report-maven-plugin` which delivered the idea to have an inspection for todo's directly in IntelliJ IDEA.
 
