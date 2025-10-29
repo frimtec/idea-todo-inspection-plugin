@@ -16,6 +16,10 @@
 
 ### Security
 
+## 0.3.2 - 2025-10-28
+
+- Optimize quick fix order
+
 ## 0.3.1 - 2025-10-28
 
 - Fix plugin installation folder name
