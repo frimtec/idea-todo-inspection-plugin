@@ -31,6 +31,9 @@ categories:
     labels:
       - "dependencies"
 
+exclude-labels:
+  - 'release changelog'
+
 version-resolver:
   major:
     labels:
