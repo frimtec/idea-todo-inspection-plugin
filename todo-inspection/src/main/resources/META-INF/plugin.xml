@@ -1,4 +1,4 @@
-<idea-plugin>
+<idea-plugin require-restart="true">
     <id>com.github.frimtec.idea-todo-inspection-plugin</id>
     <name>Todo Inspection</name>
 
