@@ -1,9 +1,11 @@
 package com.github.frimtec.idea.plugin.todoinspection.quickfix;
 
+import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.ide.BrowserUtil;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,6 +35,13 @@ public class OpenTicketInBrowserQuickFix implements LocalQuickFix {
 
     @Override
     public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
-        BrowserUtil.browse(this.jiraUrl + "/browse/" + this.ticketKey);
+        ApplicationManager.getApplication().invokeLater(
+                () -> BrowserUtil.browse(this.jiraUrl + "/browse/" + this.ticketKey)
+        );
+    }
+
+    @Override
+    public @NotNull IntentionPreviewInfo generatePreview(@NotNull Project project, @NotNull ProblemDescriptor previewDescriptor) {
+        return IntentionPreviewInfo.EMPTY;
     }
 }
