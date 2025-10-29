@@ -16,6 +16,10 @@
 
 ### Security
 
+## 1.0.0 - 2025-10-29
+
+- Configuration UI improvements
+
 ## 0.3.2 - 2025-10-28
 
 - Optimize quick fix order
