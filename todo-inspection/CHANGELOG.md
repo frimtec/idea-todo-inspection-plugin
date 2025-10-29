@@ -16,6 +16,10 @@
 
 ### Security
 
+## 1.0.1 - 2025-10-29
+
+- Fix side effect not allowed error in idea log
+
 ## 1.0.0 - 2025-10-29
 
 - Configuration UI improvements
