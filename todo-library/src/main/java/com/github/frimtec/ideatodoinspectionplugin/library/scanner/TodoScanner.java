@@ -5,10 +5,7 @@ import com.github.frimtec.ideatodoinspectionplugin.library.jira.JiraService;
 import com.github.frimtec.ideatodoinspectionplugin.library.model.Ticket;
 import com.github.frimtec.ideatodoinspectionplugin.library.model.Todo;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,6 +25,13 @@ public class TodoScanner {
         this.todoPattern = Pattern.compile("(" + String.join("|", Arrays.stream(Todo.Type.values()).map(Todo.Type::name).toList()) + ").*");
         this.jiraPattern = Pattern.compile(".*((" + String.join("|", jiraProjectsKeys) + ")-[0-9]+).*");
         this.doneMapping = doneMapping;
+    }
+
+    public boolean testConnection(String testTicketKey) {
+        return !Set.of(
+                Ticket.Status.JIRA_CONFIGURATION_ERROR,
+                Ticket.Status.UNKNOWN
+        ).contains(this.jiraService.loadTicket(testTicketKey).status(s -> Ticket.Status.OPEN));
     }
 
     public List<Todo> parseTodo(String commentBlock) {

@@ -13,6 +13,7 @@ import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.codeInspection.util.InspectionMessage;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElementVisitor;
@@ -73,6 +74,15 @@ public class TodoInspection extends LocalInspectionTool {
                 this.allowFixme = value;
                 this.inspectionOptions = buildInspectionOptions();
             }),
+            textOption("Jira Project Keys", () -> this.jiraProjectKeys, (value) -> {
+                this.jiraProjectKeys = value;
+                this.inspectionOptions = buildInspectionOptions();
+            }),
+            textOption("Jira Closed States", () -> this.jiraClosedStates, (value) -> {
+                this.jiraClosedStates = value;
+                this.inspectionOptions = buildInspectionOptions();
+            }),
+            separator(),
             textOption("Jira URL", () -> this.jiraUrl, (value) -> {
                 this.jiraUrl = value;
                 this.inspectionOptions = buildInspectionOptions();
@@ -85,13 +95,21 @@ public class TodoInspection extends LocalInspectionTool {
                 this.jiraApiToken = Encoder.fromPlain(value).encodedValue();
                 this.inspectionOptions = buildInspectionOptions();
             }),
-            textOption("Jira Project Keys", () -> this.jiraProjectKeys, (value) -> {
-                this.jiraProjectKeys = value;
-                this.inspectionOptions = buildInspectionOptions();
-            }),
-            textOption("Jira Closed States", () -> this.jiraClosedStates, (value) -> {
-                this.jiraClosedStates = value;
-                this.inspectionOptions = buildInspectionOptions();
+            action("Test connection", button -> {
+                button.setEnabled(false);
+                try {
+                    String testProjectId = "CONNECTIONTEST";
+                    TodoScanner scanner = new TodoScanner(createJiraService(), Set.of(testProjectId), Ticket.statusMapper(Set.of()));
+                    boolean isConnectionSuccessful = scanner.testConnection("%s-0".formatted(testProjectId));
+                    String title = "Jira Connection Test";
+                    if (isConnectionSuccessful) {
+                        Messages.showInfoMessage("Connection successful.", title);
+                    } else {
+                        Messages.showWarningDialog("Connection failed!", title);
+                    }
+                } finally {
+                    button.setEnabled(true);
+                }
             })
     );
 
@@ -121,20 +139,11 @@ public class TodoInspection extends LocalInspectionTool {
             public void visitComment(@NotNull PsiComment comment) {
                 var scannerEntry = TodoInspection.this.scannerEntry.get();
                 if (scannerEntry == null || !TodoInspection.this.inspectionOptions.equals(scannerEntry.options)) {
-                    CertificateManager certificateManager = CertificateManager.getInstance();
                     LOGGER.info("Initialize new TodoScanner with options: " + inspectionOptions);
                     scannerEntry = new ScannerEntry(
                             inspectionOptions,
                             new TodoScanner(
-                                    new JiraService(
-                                            inspectionOptions.jiraUrl(),
-                                            inspectionOptions.jiraUsername(),
-                                            inspectionOptions.jiraApiToken().plain(),
-                                            new JiraService.TlsTrust(
-                                                    certificateManager.getSslContext(),
-                                                    certificateManager.getTrustManager()
-                                            )
-                                    ),
+                                    createJiraService(),
                                     split(TodoInspection.this.jiraProjectKeys),
                                     Ticket.statusMapper(split(TodoInspection.this.jiraClosedStates)))
                     );
@@ -168,6 +177,19 @@ public class TodoInspection extends LocalInspectionTool {
                 });
             }
         };
+    }
+
+    private @NotNull JiraService createJiraService() {
+        CertificateManager certificateManager = CertificateManager.getInstance();
+        return new JiraService(
+                inspectionOptions.jiraUrl(),
+                inspectionOptions.jiraUsername(),
+                inspectionOptions.jiraApiToken().plain(),
+                new JiraService.TlsTrust(
+                        certificateManager.getSslContext(),
+                        certificateManager.getTrustManager()
+                )
+        );
     }
 
     private @NotNull @InspectionMessage String formatMessage(Todo todo) {

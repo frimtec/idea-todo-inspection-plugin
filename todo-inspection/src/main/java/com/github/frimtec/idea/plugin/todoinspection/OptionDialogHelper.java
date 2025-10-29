@@ -24,18 +24,29 @@ public class OptionDialogHelper {
 
         for (int i = 0; i < options.size(); i++) {
             Option option = options.get(i);
-            constraints.gridx = 0;
-            constraints.gridy = i;
-            panel.add(new JLabel(option.label()), constraints);
-            constraints.gridx = 1;
-            constraints.gridy = i;
-            panel.add(option.component(), constraints);
+
+            if (option instanceof Separator) {
+                constraints.gridx = 0;
+                constraints.gridy = i;
+                panel.add(option.component(), constraints);
+                constraints.gridx = 1;
+                constraints.gridy = i;
+                panel.add(option.component(), constraints);
+            } else {
+                constraints.gridx = 0;
+                constraints.gridy = i;
+                panel.add(new JLabel(option.label()), constraints);
+                constraints.gridx = 1;
+                constraints.gridy = i;
+                panel.add(option.component(), constraints);
+            }
         }
         return panel;
     }
 
     interface Option {
         String label();
+
         JComponent component();
     }
 
@@ -51,7 +62,16 @@ public class OptionDialogHelper {
         return new BooleanOption(label, propertyAccessor, propertySetter);
     }
 
-    private record StringOption(String label, Supplier<String> propertyAccessor, Consumer<String> propertySetter, boolean secret) implements Option {
+    static Option separator() {
+        return new Separator();
+    }
+
+    static Option action(String label, Consumer<JButton> actionListener) {
+        return new Action(label, actionListener);
+    }
+
+    private record StringOption(String label, Supplier<String> propertyAccessor, Consumer<String> propertySetter,
+                                boolean secret) implements Option {
 
         @Override
         public JComponent component() {
@@ -66,13 +86,42 @@ public class OptionDialogHelper {
         }
     }
 
-    private record BooleanOption(String label, Supplier<Boolean> propertyAccessor, Consumer<Boolean> propertySetter) implements Option {
+    private record BooleanOption(String label, Supplier<Boolean> propertyAccessor,
+                                 Consumer<Boolean> propertySetter) implements Option {
 
         @Override
         public JComponent component() {
             JCheckBox field = new JCheckBox("", propertyAccessor.get());
             field.addActionListener(e -> propertySetter.accept(field.isSelected()));
             return field;
+        }
+    }
+
+    private static class Separator implements Option {
+
+        @Override
+        public String label() {
+            return "";
+        }
+
+        @Override
+        public JComponent component() {
+            return new JSeparator();
+        }
+    }
+
+    private record Action(String label, Consumer<JButton> actionListener) implements Option {
+
+        @Override
+        public String label() {
+            return "";
+        }
+
+        @Override
+        public JComponent component() {
+            JButton button = new JButton(this.label);
+            button.addActionListener(e -> actionListener.accept(button));
+            return button;
         }
     }
 
