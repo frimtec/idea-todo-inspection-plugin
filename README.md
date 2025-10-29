@@ -96,7 +96,7 @@ The following settings are available:
 ### 🏆 Credits
 
 * [SIX Group](https://github.com/six-group): For the code-camp 2025 (where this plugin was initially developed).
-* [rcs80](https://github.com/rsc80): For the `todo-report-maven-plugin` which delivered the idea to have an inspection for todo's directly in IntelliJ IDEA.
+* [rcs80](https://github.com/rsc80): For the `todo-report-maven-plugin` which delivered the idea to have an inspection for `TODO`s directly in IntelliJ IDEA.
 
 [license-shield]: https://img.shields.io/github/license/frimtec/idea-todo-inspection-plugin.svg
 [license]: https://opensource.org/licenses/Apache-2.0
