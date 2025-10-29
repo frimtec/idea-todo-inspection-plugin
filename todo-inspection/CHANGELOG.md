@@ -16,6 +16,10 @@
 
 ### Security
 
+## 1.0.2 - 2025-10-29
+
+- Fix config reset to defaults during plugin update
+
 ## 1.0.1 - 2025-10-29
 
 - Fix side effect not allowed error in idea log
