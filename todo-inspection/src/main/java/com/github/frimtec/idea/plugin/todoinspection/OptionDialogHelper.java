@@ -1,6 +1,7 @@
 package com.github.frimtec.idea.plugin.todoinspection;
 
 import com.intellij.ui.DocumentAdapter;
+import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -18,48 +19,51 @@ public class OptionDialogHelper {
 
     static JComponent createOptionsPanel(List<Option> options) {
         JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.weightx = 0.5;
-        constraints.fill = GridBagConstraints.BOTH;
-
+        GridBagConstraints c = new GridBagConstraints();
         for (int i = 0; i < options.size(); i++) {
+            c.gridy = i;
             Option option = options.get(i);
-
             if (option instanceof Separator) {
-                constraints.gridx = 0;
-                constraints.gridy = i;
-                panel.add(option.component(), constraints);
-                constraints.gridx = 1;
-                constraints.gridy = i;
-                panel.add(option.component(), constraints);
+                c.gridx = 0;
+                c.gridwidth = 2;
+                c.weightx = 1.0;
+                c.fill = GridBagConstraints.HORIZONTAL;
+                c.insets = JBUI.insets(4, 0);
+                panel.add(option.component(), c);
             } else {
-                constraints.gridx = 0;
-                constraints.gridy = i;
-                panel.add(new JLabel(option.label()), constraints);
-                constraints.gridx = 1;
-                constraints.gridy = i;
-                panel.add(option.component(), constraints);
+                c.gridwidth = 1;
+                c.anchor = GridBagConstraints.LINE_START;
+                c.insets = JBUI.insets(2, 4);
+
+                c.gridx = 0;
+                c.weightx = 0.0;
+                c.fill = GridBagConstraints.NONE;
+                panel.add(new JLabel(option.label()), c);
+
+                c.gridx = 1;
+                c.weightx = 1.0;
+                c.fill = GridBagConstraints.HORIZONTAL;
+                panel.add(option.component(), c);
             }
         }
         return panel;
     }
-
     interface Option {
         String label();
 
         JComponent component();
     }
 
-    static Option textOption(String label, Supplier<String> propertyAccessor, Consumer<String> propertySetter) {
-        return new StringOption(label, propertyAccessor, propertySetter, false);
+    static Option textOption(String label, String description, Supplier<String> propertyAccessor, Consumer<String> propertySetter) {
+        return new StringOption(label, description, propertyAccessor, propertySetter, false);
     }
 
-    static Option secretOption(String label, Supplier<String> propertyAccessor, Consumer<String> propertySetter) {
-        return new StringOption(label, propertyAccessor, propertySetter, true);
+    static Option secretOption(String label, String description, Supplier<String> propertyAccessor, Consumer<String> propertySetter) {
+        return new StringOption(label, description, propertyAccessor, propertySetter, true);
     }
 
-    static Option booleanOption(String label, Supplier<Boolean> propertyAccessor, Consumer<Boolean> propertySetter) {
-        return new BooleanOption(label, propertyAccessor, propertySetter);
+    static Option booleanOption(String label, String checkedText, String uncheckedText, Supplier<Boolean> propertyAccessor, Consumer<Boolean> propertySetter) {
+        return new BooleanOption(label, checkedText, uncheckedText, propertyAccessor, propertySetter);
     }
 
     static Option separator() {
@@ -70,7 +74,8 @@ public class OptionDialogHelper {
         return new Action(label, actionListener);
     }
 
-    private record StringOption(String label, Supplier<String> propertyAccessor, Consumer<String> propertySetter,
+    private record StringOption(String label, String description, Supplier<String> propertyAccessor,
+                                Consumer<String> propertySetter,
                                 boolean secret) implements Option {
 
         @Override
@@ -82,18 +87,28 @@ public class OptionDialogHelper {
                     propertySetter.accept(field.getText());
                 }
             });
+            field.setToolTipText(this.description);
             return field;
         }
     }
 
-    private record BooleanOption(String label, Supplier<Boolean> propertyAccessor,
+    private record BooleanOption(String label, String checkedText, String uncheckedText,
+                                 Supplier<Boolean> propertyAccessor,
                                  Consumer<Boolean> propertySetter) implements Option {
 
         @Override
         public JComponent component() {
-            JCheckBox field = new JCheckBox("", propertyAccessor.get());
-            field.addActionListener(e -> propertySetter.accept(field.isSelected()));
+            Boolean checked = propertyAccessor.get();
+            JCheckBox field = new JCheckBox(text(checked), checked);
+            field.addActionListener(e -> {
+                propertySetter.accept(field.isSelected());
+                field.setText(text(field.isSelected()));
+            });
             return field;
+        }
+
+        private String text(boolean checked) {
+            return checked ? checkedText : uncheckedText;
         }
     }
 
