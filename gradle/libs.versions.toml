@@ -12,7 +12,7 @@ gson = "2.13.2"
 wiremock = "3.0.1"
 mockito = "5.20.0"
 assertj = "3.27.6"
-junit-jupiter = "6.0.0"
+junit-jupiter = "6.0.1"
 
 [plugins]
 plugin-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "plugin-kotlin-jvm" }
