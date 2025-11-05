@@ -16,6 +16,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiComment;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.util.net.ssl.CertificateManager;
 import org.jdom.Element;
@@ -161,45 +162,47 @@ public class TodoInspection extends LocalInspectionTool {
         return new PsiElementVisitor() {
 
             @Override
-            public void visitComment(@NotNull PsiComment comment) {
-                var scannerEntry = TodoInspection.this.scannerEntry.get();
-                if (scannerEntry == null || !TodoInspection.this.inspectionOptions.equals(scannerEntry.options)) {
-                    LOGGER.info("Initialize new TodoScanner with options: " + inspectionOptions);
-                    scannerEntry = new ScannerEntry(
-                            inspectionOptions,
-                            new TodoScanner(
-                                    createJiraService(),
-                                    split(TodoInspection.this.jiraProjectKeys),
-                                    Ticket.statusMapper(split(TodoInspection.this.jiraClosedStates)))
-                    );
-                    TodoInspection.this.scannerEntry.set(scannerEntry);
+            public void visitElement(@NotNull PsiElement element) {
+                if (element instanceof PsiComment comment) {
+                    var scannerEntry = TodoInspection.this.scannerEntry.get();
+                    if (scannerEntry == null || !TodoInspection.this.inspectionOptions.equals(scannerEntry.options)) {
+                        LOGGER.info("Initialize new TodoScanner with options: " + inspectionOptions);
+                        scannerEntry = new ScannerEntry(
+                                inspectionOptions,
+                                new TodoScanner(
+                                        createJiraService(),
+                                        split(TodoInspection.this.jiraProjectKeys),
+                                        Ticket.statusMapper(split(TodoInspection.this.jiraClosedStates)))
+                        );
+                        TodoInspection.this.scannerEntry.set(scannerEntry);
+                    }
+                    scannerEntry.scanner().parseTodo(comment.getText()).forEach(todo -> {
+                        List<LocalQuickFix> quickFixes = new ArrayList<>();
+                        todo.ticket().ifPresent(
+                                ticket ->
+                                        quickFixes.add(STATES_WITH_EXISTING_TICKET.contains(todo.status()) ?
+                                                new OpenTicketInBrowserQuickFix(TodoInspection.this.inspectionOptions.jiraUrl(), ticket.key()) : null)
+                        );
+                        quickFixes.add(new DeleteTodoQuickFix(comment, todo.textRange(), todo.type()));
+                        if (todo.type() == Todo.Type.FIXME && !TodoInspection.this.allowFixme) {
+                            quickFixes.add(new FixMeToTodoQuickFix(comment, todo.textRange()));
+                            holder.registerProblem(
+                                    comment,
+                                    convertToTextRange(todo.textRange()),
+                                    "FIXME not allowed",
+                                    quickFixes.toArray(LocalQuickFix[]::new)
+                            );
+                        }
+                        if (todo.status() != TodoStatus.CONSISTENT) {
+                            holder.registerProblem(
+                                    comment,
+                                    convertToTextRange(todo.textRange()),
+                                    formatMessage(todo),
+                                    quickFixes.toArray(LocalQuickFix[]::new)
+                            );
+                        }
+                    });
                 }
-                scannerEntry.scanner().parseTodo(comment.getText()).forEach(todo -> {
-                    List<LocalQuickFix> quickFixes = new ArrayList<>();
-                    todo.ticket().ifPresent(
-                            ticket ->
-                                    quickFixes.add(STATES_WITH_EXISTING_TICKET.contains(todo.status()) ?
-                                            new OpenTicketInBrowserQuickFix(TodoInspection.this.inspectionOptions.jiraUrl(), ticket.key()) : null)
-                    );
-                    quickFixes.add(new DeleteTodoQuickFix(comment, todo.textRange(), todo.type()));
-                    if (todo.type() == Todo.Type.FIXME && !TodoInspection.this.allowFixme) {
-                        quickFixes.add(new FixMeToTodoQuickFix(comment, todo.textRange()));
-                        holder.registerProblem(
-                                comment,
-                                convertToTextRange(todo.textRange()),
-                                "FIXME not allowed",
-                                quickFixes.toArray(LocalQuickFix[]::new)
-                        );
-                    }
-                    if (todo.status() != TodoStatus.CONSISTENT) {
-                        holder.registerProblem(
-                                comment,
-                                convertToTextRange(todo.textRange()),
-                                formatMessage(todo),
-                                quickFixes.toArray(LocalQuickFix[]::new)
-                        );
-                    }
-                });
             }
         };
     }
