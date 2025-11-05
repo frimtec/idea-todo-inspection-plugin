@@ -15,9 +15,13 @@ import com.intellij.codeInspection.util.InspectionMessage;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.psi.PsiAnnotation;
+import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
+import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiModifierListOwner;
 import com.intellij.util.net.ssl.CertificateManager;
 import org.jdom.Element;
 import org.jetbrains.annotations.NonNls;
@@ -28,10 +32,16 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.github.frimtec.idea.plugin.todoinspection.OptionDialogHelper.*;
+import static com.github.frimtec.idea.plugin.todoinspection.OptionDialogHelper.action;
+import static com.github.frimtec.idea.plugin.todoinspection.OptionDialogHelper.booleanOption;
+import static com.github.frimtec.idea.plugin.todoinspection.OptionDialogHelper.secretOption;
+import static com.github.frimtec.idea.plugin.todoinspection.OptionDialogHelper.separator;
+import static com.github.frimtec.idea.plugin.todoinspection.OptionDialogHelper.textOption;
 
 public class TodoInspection extends LocalInspectionTool {
 
@@ -40,6 +50,9 @@ public class TodoInspection extends LocalInspectionTool {
     private static final Set<TodoStatus> STATES_WITH_EXISTING_TICKET = Set.of(
             TodoStatus.INCONSISTENT_TICKET_DONE,
             TodoStatus.CONSISTENT
+    );
+    private static final List<String> ANNOTATIONS_TO_SCAN = List.of(
+            "org.junit.jupiter.api.Disabled"
     );
 
     private record ScannerEntry(InspectionOptions options, TodoScanner scanner) {
@@ -163,46 +176,65 @@ public class TodoInspection extends LocalInspectionTool {
 
             @Override
             public void visitElement(@NotNull PsiElement element) {
-                if (element instanceof PsiComment comment) {
-                    var scannerEntry = TodoInspection.this.scannerEntry.get();
-                    if (scannerEntry == null || !TodoInspection.this.inspectionOptions.equals(scannerEntry.options)) {
-                        LOGGER.info("Initialize new TodoScanner with options: " + inspectionOptions);
-                        scannerEntry = new ScannerEntry(
-                                inspectionOptions,
-                                new TodoScanner(
-                                        createJiraService(),
-                                        split(TodoInspection.this.jiraProjectKeys),
-                                        Ticket.statusMapper(split(TodoInspection.this.jiraClosedStates)))
-                        );
-                        TodoInspection.this.scannerEntry.set(scannerEntry);
+                switch (element) {
+                    case PsiComment comment -> scanElement(comment);
+                    case PsiMethod method -> findAnnotation(method).ifPresent(this::scanElement);
+                    case PsiClass clazz -> findAnnotation(clazz).ifPresent(this::scanElement);
+                    default -> {
                     }
-                    scannerEntry.scanner().parseTodo(comment.getText()).forEach(todo -> {
-                        List<LocalQuickFix> quickFixes = new ArrayList<>();
-                        todo.ticket().ifPresent(
-                                ticket ->
-                                        quickFixes.add(STATES_WITH_EXISTING_TICKET.contains(todo.status()) ?
-                                                new OpenTicketInBrowserQuickFix(TodoInspection.this.inspectionOptions.jiraUrl(), ticket.key()) : null)
-                        );
-                        quickFixes.add(new DeleteTodoQuickFix(comment, todo.textRange(), todo.type()));
-                        if (todo.type() == Todo.Type.FIXME && !TodoInspection.this.allowFixme) {
-                            quickFixes.add(new FixMeToTodoQuickFix(comment, todo.textRange()));
-                            holder.registerProblem(
-                                    comment,
-                                    convertToTextRange(todo.textRange()),
-                                    "FIXME not allowed",
-                                    quickFixes.toArray(LocalQuickFix[]::new)
-                            );
-                        }
-                        if (todo.status() != TodoStatus.CONSISTENT) {
-                            holder.registerProblem(
-                                    comment,
-                                    convertToTextRange(todo.textRange()),
-                                    formatMessage(todo),
-                                    quickFixes.toArray(LocalQuickFix[]::new)
-                            );
-                        }
-                    });
                 }
+            }
+
+            private static Optional<PsiAnnotation> findAnnotation(PsiModifierListOwner method) {
+                var modifierList = method.getModifierList();
+                if (modifierList == null) {
+                    return Optional.empty();
+                }
+                return ANNOTATIONS_TO_SCAN.stream()
+                        .map(modifierList::findAnnotation)
+                        .filter(Objects::nonNull)
+                        .findFirst();
+            }
+
+            private void scanElement(PsiElement element) {
+                var scannerEntry = TodoInspection.this.scannerEntry.get();
+                if (scannerEntry == null || !TodoInspection.this.inspectionOptions.equals(scannerEntry.options)) {
+                    LOGGER.info("Initialize new TodoScanner with options: " + inspectionOptions);
+                    scannerEntry = new ScannerEntry(
+                            inspectionOptions,
+                            new TodoScanner(
+                                    createJiraService(),
+                                    split(TodoInspection.this.jiraProjectKeys),
+                                    Ticket.statusMapper(split(TodoInspection.this.jiraClosedStates)))
+                    );
+                    TodoInspection.this.scannerEntry.set(scannerEntry);
+                }
+                scannerEntry.scanner().parseTodo(element.getText()).forEach(todo -> {
+                    List<LocalQuickFix> quickFixes = new ArrayList<>();
+                    todo.ticket().ifPresent(
+                            ticket ->
+                                    quickFixes.add(STATES_WITH_EXISTING_TICKET.contains(todo.status()) ?
+                                            new OpenTicketInBrowserQuickFix(TodoInspection.this.inspectionOptions.jiraUrl(), ticket.key()) : null)
+                    );
+                    quickFixes.add(new DeleteTodoQuickFix(element, todo.textRange(), todo.type()));
+                    if (todo.type() == Todo.Type.FIXME && !TodoInspection.this.allowFixme) {
+                        quickFixes.add(new FixMeToTodoQuickFix(element, todo.textRange()));
+                        holder.registerProblem(
+                                element,
+                                convertToTextRange(todo.textRange()),
+                                "FIXME not allowed",
+                                quickFixes.toArray(LocalQuickFix[]::new)
+                        );
+                    }
+                    if (todo.status() != TodoStatus.CONSISTENT) {
+                        holder.registerProblem(
+                                element,
+                                convertToTextRange(todo.textRange()),
+                                formatMessage(todo),
+                                quickFixes.toArray(LocalQuickFix[]::new)
+                        );
+                    }
+                });
             }
         };
     }

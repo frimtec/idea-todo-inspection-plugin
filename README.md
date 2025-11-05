@@ -33,6 +33,35 @@ This plugin provides real-time feedback by marking `TODO` or `FIXME` comments in
 
 ![Warnings](images/warning.png)
 
+The following code locations are scanned for `TODO` or `FIXME` comments:
+
+<table>
+  <thead>
+    <tr>
+      <th>Location</th>
+      <th>Filetypes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Single line comments</td>
+      <td>any</td>
+    </tr>
+    <tr>
+      <td>Multiline comments</td>
+      <td>any</td>
+    </tr>
+    <tr>
+      <td>Doc comments (e.g., Javadoc in Java)</td>
+      <td>any</td>
+    </tr>
+    <tr>
+      <td>JUnit-Jupiter <code>@Disabled</code> annotations</td>
+      <td>Java</td>
+    </tr>
+  </tbody>
+</table>
+
 ### Examples
 
 <table>
