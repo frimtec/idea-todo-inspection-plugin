@@ -16,6 +16,12 @@
 
 ### Security
 
+## 1.0.3 - 2025-11-06
+
+- Add additional support for doc comments
+- Bump org.jetbrains.intellij.platform from 2.10.2 to 2.10.4
+- Bump org.junit.jupiter:junit-jupiter from 6.0.0 to 6.0.1
+
 ## 1.0.2 - 2025-10-29
 
 - Fix config reset to defaults during plugin update
