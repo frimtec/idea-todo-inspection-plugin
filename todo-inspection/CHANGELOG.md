@@ -16,6 +16,13 @@
 
 ### Security
 
+## 1.0.4 - 2025-12-01
+
+- Add support for Jetbrains platform 2025.3
+- Bump actions/checkout from 5 to 6
+- Bump org.jetbrains.qodana from 2025.2.1 to 2025.2.2
+- Bump JetBrains/qodana-action from 2025.2.1 to 2025.2.2
+
 ## 1.0.3 - 2025-11-06
 
 - Add additional support for doc comments
