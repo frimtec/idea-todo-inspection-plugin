@@ -3,7 +3,7 @@
 plugin-kotlin-jvm="2.2.21"
 plugin-intellij-platform = "2.10.5"
 changelog = "2.5.0"
-qodana = "2025.2.2"
+qodana = "2025.2.3"
 
 retrofit = "3.0.0"
 retrofit-converter-gson = "3.0.0"
