@@ -10,7 +10,7 @@ retrofit-converter-gson = "3.0.0"
 gson = "2.13.2"
 
 wiremock = "3.0.1"
-mockito = "5.20.0"
+mockito = "5.21.0"
 assertj = "3.27.6"
 junit-jupiter = "6.0.1"
 
