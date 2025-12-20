@@ -10,6 +10,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+permissions:
+  actions: write
+  contents: read
+
 jobs:
 
   # Prepare environment and build the plugin
@@ -24,6 +28,24 @@ jobs:
       # Check out the current repository
       - name: Fetch Sources
         uses: actions/checkout@v6
+
+      - name: Delete all caches
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Installing gh-actions-cache extension..."
+          gh extension install actions/gh-actions-cache
+          
+          echo "Fetching list of caches..."
+          cacheKeysForPR=$(gh actions-cache list --limit 100 | cut -f 1)
+          
+          for cacheKey in $cacheKeysForPR
+          do
+              echo "Deleting $cacheKey"
+              gh actions-cache delete "$cacheKey" --confirm
+          done
+          echo "Done"
 
       # Set up Java environment for the next steps
       - name: Setup Java
