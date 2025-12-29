@@ -100,7 +100,7 @@ The following settings are available:
 
 [license-shield]: https://img.shields.io/github/license/frimtec/idea-todo-inspection-plugin.svg
 [license]: https://opensource.org/licenses/Apache-2.0
-[maintenance-shield]: https://img.shields.io/maintenance/yes/2025.svg
+[maintenance-shield]: https://img.shields.io/maintenance/yes/2026.svg
 [build-status-shield]: https://github.com/frimtec/idea-todo-inspection-plugin/workflows/Build/badge.svg
 [build-status]: https://github.com/frimtec/idea-todo-inspection-plugin/actions?query=workflow%3ABuild
 [deploy-status-shield]: https://github.com/frimtec/idea-todo-inspection-plugin/actions/workflows/release.yml/badge.svg
