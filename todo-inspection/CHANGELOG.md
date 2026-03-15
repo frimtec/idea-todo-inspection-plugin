@@ -16,6 +16,27 @@
 
 ### Security
 
+## 1.0.5 - 2026-03-15
+
+- Clean github-action caches before running build
+- Bump dev platform to 2025.3
+- Add maintenance support for 2026
+- Add support for platform 2026.1
+- Bump org.jetbrains.intellij.platform from 2.10.4 to 2.10.5
+- Bump org.jetbrains.changelog from 2.4.0 to 2.5.0
+- Bump JetBrains/qodana-action from 2025.2.2 to 2025.2.4
+- Bump actions/cache from 4 to 5
+- Bump org.jetbrains.qodana from 2025.2.2 to 2025.2.4
+- Bump org.jetbrains.kotlin.jvm from 2.2.21 to 2.3.0
+- Bump JetBrains/qodana-action from 2025.2.4 to 2025.3.1
+- Bump org.jetbrains.qodana from 2025.2.4 to 2025.3.1
+- Bump gradle-wrapper from 8.14.3 to 9.3.0
+- Bump org.jetbrains.intellij.platform from 2.10.5 to 2.11.0
+- Bump gradle-wrapper from 9.3.0 to 9.3.1
+- Bump org.jetbrains.kotlin.jvm from 2.3.0 to 2.3.10
+- Bump gradle-wrapper from 9.3.1 to 9.4.0
+- Bump org.jetbrains.intellij.platform from 2.11.0 to 2.12.0
+
 ## 1.0.4 - 2025-12-01
 
 - Add support for Jetbrains platform 2025.3
