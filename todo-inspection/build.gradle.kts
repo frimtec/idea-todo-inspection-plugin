@@ -12,6 +12,10 @@ plugins {
 group = "com.github.frimtec.ideatodoinspectionplugin.plugin"
 version = providers.gradleProperty("pluginVersion").get()
 
+kotlin {
+    jvmToolchain(25)
+}
+
 repositories {
     mavenCentral()
     intellijPlatform {
