@@ -16,6 +16,21 @@
 
 ### Security
 
+## 1.1.0 - 2026-04-20
+
+- Bump JDK to 25
+- Bump release-drafter/release-drafter from 6.4.0 to 7.0.0
+- Bump mockito from 5.22.0 to 5.23.0
+- Bump org.jetbrains.qodana from 2025.3.1 to 2025.3.2
+- Bump org.jetbrains.kotlin.jvm from 2.3.10 to 2.3.20
+- Bump JetBrains/qodana-action from 2025.3.1 to 2025.3.2
+- Bump org.jetbrains.intellij.platform from 2.12.0 to 2.13.1
+- Bump release-drafter/release-drafter from 7.0.0 to 7.1.1
+- Bump gradle-wrapper from 9.4.0 to 9.4.1
+- Bump gradle/actions from 5 to 6
+- Bump release-drafter/release-drafter from 7.1.1 to 7.2.0
+- Bump org.jetbrains.intellij.platform from 2.13.1 to 2.14.0
+
 ## 1.0.5 - 2026-03-15
 
 - Clean github-action caches before running build
