@@ -18,20 +18,22 @@ public class TodoScanner {
     private final JiraService jiraService;
     private final Pattern todoPattern;
     private final Pattern jiraPattern;
+    private final Set<String> jiraProjectsKeys;
     private final Function<String, Ticket.Status> doneMapping;
 
     public TodoScanner(JiraService jiraService, Set<String> jiraProjectsKeys, Function<String, Ticket.Status> doneMapping) {
         this.jiraService = jiraService;
         this.todoPattern = Pattern.compile("(" + String.join("|", Arrays.stream(Todo.Type.values()).map(Todo.Type::name).toList()) + ").*");
         this.jiraPattern = Pattern.compile(".*((" + String.join("|", jiraProjectsKeys) + ")-[0-9]+).*");
+        this.jiraProjectsKeys = Set.copyOf(jiraProjectsKeys);
         this.doneMapping = doneMapping;
     }
 
-    public boolean testConnection(String testTicketKey) {
+    public boolean testConnection() {
         return !Set.of(
                 Ticket.Status.JIRA_CONFIGURATION_ERROR,
                 Ticket.Status.UNKNOWN
-        ).contains(this.jiraService.loadTicket(testTicketKey).status(s -> Ticket.Status.OPEN));
+        ).contains(this.jiraService.ping(jiraProjectsKeys).status(_ -> Ticket.Status.OPEN));
     }
 
     public List<Todo> parseTodo(String commentBlock) {

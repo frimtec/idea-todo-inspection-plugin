@@ -1,12 +1,12 @@
 package com.github.frimtec.idea.plugin.todoinspection;
 
+import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.util.List;
 import java.util.function.Consumer;
@@ -62,6 +62,10 @@ public class OptionDialogHelper {
         return new StringOption(label, description, propertyAccessor, propertySetter, true);
     }
 
+    static <T extends Enum<T>> Option enumOption(String label, String description, Supplier<T> propertyAccessor, Consumer<T> propertySetter, Class<T> enumType) {
+        return new EnumOption<>(label, description, propertyAccessor, propertySetter, enumType);
+    }
+
     static Option booleanOption(String label, String checkedText, String uncheckedText, Supplier<Boolean> propertyAccessor, Consumer<Boolean> propertySetter) {
         return new BooleanOption(label, checkedText, uncheckedText, propertyAccessor, propertySetter);
     }
@@ -80,13 +84,28 @@ public class OptionDialogHelper {
 
         @Override
         public JComponent component() {
-            JTextComponent field = secret ? new JPasswordField(propertyAccessor.get()) : new JTextField(propertyAccessor.get());
+            JTextField field = secret ? new JPasswordField(propertyAccessor.get()) : new JTextField(propertyAccessor.get());
+            field.setColumns(25);
             field.getDocument().addDocumentListener(new DocumentAdapter() {
                 @Override
                 public void textChanged(@NotNull DocumentEvent event) {
                     propertySetter.accept(field.getText());
                 }
             });
+            field.setToolTipText(this.description);
+            return field;
+        }
+    }
+
+    private record EnumOption<T extends Enum<T>>(String label, String description, Supplier<T> propertyAccessor,
+                                                 Consumer<T> propertySetter, Class<T> enumType) implements Option {
+
+        @Override
+        public JComponent component() {
+            ComboBox<T> field = new ComboBox<>(enumType.getEnumConstants());
+            field.setSelectedItem(propertyAccessor.get());
+          //noinspection unchecked
+          field.addActionListener(_ -> propertySetter.accept((T) field.getSelectedItem()));
             field.setToolTipText(this.description);
             return field;
         }
@@ -100,7 +119,7 @@ public class OptionDialogHelper {
         public JComponent component() {
             Boolean checked = propertyAccessor.get();
             JCheckBox field = new JCheckBox(text(checked), checked);
-            field.addActionListener(e -> {
+            field.addActionListener(_ -> {
                 propertySetter.accept(field.isSelected());
                 field.setText(text(field.isSelected()));
             });
@@ -135,7 +154,7 @@ public class OptionDialogHelper {
         @Override
         public JComponent component() {
             JButton button = new JButton(this.label);
-            button.addActionListener(e -> actionListener.accept(button));
+            button.addActionListener(_ -> actionListener.accept(button));
             return button;
         }
     }
