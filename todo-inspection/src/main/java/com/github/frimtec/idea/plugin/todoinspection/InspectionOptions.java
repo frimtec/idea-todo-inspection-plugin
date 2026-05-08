@@ -1,8 +1,11 @@
 package com.github.frimtec.idea.plugin.todoinspection;
 
+import com.github.frimtec.ideatodoinspectionplugin.library.jira.ApiVersion;
+
 record InspectionOptions(
         boolean allowFixme,
         String jiraUrl,
+        ApiVersion apiVersion,
         String jiraUsername,
         Encoder jiraApiToken,
         String jiraProjectKeys,
@@ -12,6 +15,7 @@ record InspectionOptions(
     static InspectionOptions of(
             boolean allowFixme,
             String jiraUrl,
+            ApiVersion apiVersion,
             String jiraUsername,
             Encoder jiraApiToken,
             String jiraProjectKeys,
@@ -20,6 +24,7 @@ record InspectionOptions(
         return new InspectionOptions(
                 allowFixme,
                 jiraUrl,
+                apiVersion,
                 jiraUsername,
                 jiraApiToken,
                 jiraProjectKeys,

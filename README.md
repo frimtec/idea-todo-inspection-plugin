@@ -90,6 +90,7 @@ The following settings are available:
 | Jira Project Keys  | Comma separated list of Jira project-keys used to find ticket-IDs in the TODO comments.                              |                      |
 | Jira Closed States | Comma separated list of ticket status to consider as closed.                                                         | Closed,Done,Resolved |
 | Jira URL           | The Jira base-url which can be used to query the Jira API.                                                           |                      |
+| Jira API version   | The Jira API version supported by the Jira instance (Jira Cloud requires V3).                                        | V2                   |
 | Jira Username      | Username for a Jira user account to be used to query the Jira API (requires only read access to your Jira projects). |                      |
 | Jira API-Token     | API token or password for the configured Jira user account.                                                          |                      |
 
