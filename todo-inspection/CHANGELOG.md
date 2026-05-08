@@ -2,21 +2,21 @@
 
 # Todo Inspection Plugin Changelog
 
-## Unreleased
+## [Unreleased]
 
-### Added
+## [1.2.0] - 2026-05-08
 
-### Changed
+- Add support for JIRA cloud with Jira API V3
+- Bump org.jetbrains.kotlin.jvm from 2.3.20 to 2.3.21
+- Bump org.jetbrains.intellij.platform from 2.14.0 to 2.15.0
+- Bump com.google.code.gson:gson from 2.13.2 to 2.14.0
+- Bump JetBrains/qodana-action from 2025.3.2 to 2026.1.0
+- Bump org.jetbrains.qodana from 2025.3.2 to 2026.1.0
+- Bump release-drafter/release-drafter from 7.2.0 to 7.2.1
+- Bump org.jetbrains.intellij.platform from 2.15.0 to 2.16.0
+- Bump gradle-wrapper from 9.4.1 to 9.5.0
 
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
-
-## 1.1.0 - 2026-04-20
+## [1.1.0] - 2026-04-20
 
 - Bump JDK to 25
 - Bump release-drafter/release-drafter from 6.4.0 to 7.0.0
@@ -31,7 +31,7 @@
 - Bump release-drafter/release-drafter from 7.1.1 to 7.2.0
 - Bump org.jetbrains.intellij.platform from 2.13.1 to 2.14.0
 
-## 1.0.5 - 2026-03-15
+## [1.0.5] - 2026-03-15
 
 - Clean github-action caches before running build
 - Bump dev platform to 2025.3
@@ -52,36 +52,36 @@
 - Bump gradle-wrapper from 9.3.1 to 9.4.0
 - Bump org.jetbrains.intellij.platform from 2.11.0 to 2.12.0
 
-## 1.0.4 - 2025-12-01
+## [1.0.4] - 2025-12-01
 
 - Add support for Jetbrains platform 2025.3
 - Bump actions/checkout from 5 to 6
 - Bump org.jetbrains.qodana from 2025.2.1 to 2025.2.2
 - Bump JetBrains/qodana-action from 2025.2.1 to 2025.2.2
 
-## 1.0.3 - 2025-11-06
+## [1.0.3] - 2025-11-06
 
 - Add additional support for doc comments
 - Bump org.jetbrains.intellij.platform from 2.10.2 to 2.10.4
 - Bump org.junit.jupiter:junit-jupiter from 6.0.0 to 6.0.1
 
-## 1.0.2 - 2025-10-29
+## [1.0.2] - 2025-10-29
 
 - Fix config reset to defaults during plugin update
 
-## 1.0.1 - 2025-10-29
+## [1.0.1] - 2025-10-29
 
 - Fix side effect not allowed error in idea log
 
-## 1.0.0 - 2025-10-29
+## [1.0.0] - 2025-10-29
 
 - Configuration UI improvements
 
-## 0.3.2 - 2025-10-28
+## [0.3.2] - 2025-10-28
 
 - Optimize quick fix order
 
-## 0.3.1 - 2025-10-28
+## [0.3.1] - 2025-10-28
 
 - Fix plugin installation folder name
 - Bump com.google.code.gson:gson from 2.11.0 to 2.13.2
@@ -89,31 +89,50 @@
 - Bump com.squareup.retrofit2:retrofit from 2.9.0 to 3.0.0
 - Bump org.jetbrains.kotlin.jvm from 2.1.0 to 2.2.21
 
-## 0.3.0 - 2025-10-26
+## [0.3.0] - 2025-10-26
 
 - Add quick fix `Convert FIXME to TODO`
 - Add quick fix `Delete TODO/FIXME`
 
-## 0.2.3 - 2025-10-25
+## [0.2.3] - 2025-10-25
 
 - Improve build and release workflows
 
-## 0.2.2 - 2025-10-25
+## [0.2.2] - 2025-10-25
 
 - Improve build and release workflows
 
-## 0.2.1 - 2025-10-25
+## [0.2.1] - 2025-10-25
 
 - Add open ticket quick-fix
 
-## 0.2.0 - 2025-10-25
+## [0.2.0] - 2025-10-25
 
 - Improve settings serialization
 
-## 0.1.0 - 2025-10-24
+## [0.1.0] - 2025-10-24
 
 - Automate build and release workflows
 
-## 0.0.1
+## [0.0.1]
 
 - Initial release
+
+[Unreleased]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/1.2.0...HEAD
+[1.2.0]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/1.1.0...1.2.0
+[1.1.0]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/1.0.5...1.1.0
+[1.0.5]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/1.0.4...1.0.5
+[1.0.4]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/1.0.3...1.0.4
+[1.0.3]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/1.0.2...1.0.3
+[1.0.2]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/1.0.1...1.0.2
+[1.0.1]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/1.0.0...1.0.1
+[1.0.0]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/0.3.2...1.0.0
+[0.3.2]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/0.3.1...0.3.2
+[0.3.1]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/0.3.0...0.3.1
+[0.3.0]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/0.2.3...0.3.0
+[0.2.3]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/0.2.2...0.2.3
+[0.2.2]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/0.2.1...0.2.2
+[0.2.1]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/0.2.0...0.2.1
+[0.2.0]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/0.1.0...0.2.0
+[0.1.0]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/0.0.1...0.1.0
+[0.0.1]: https://github.com/frimtec/idea-todo-inspection-plugin/commits/0.0.1
