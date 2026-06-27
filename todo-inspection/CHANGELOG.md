@@ -4,6 +4,14 @@
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-06-27
+
+- Add support for platform 262
+- Bump gradle-wrapper from 9.5.0 to 9.5.1
+- Bump org.junit.jupiter:junit-jupiter from 6.0.3 to 6.1.0
+- Bump org.jetbrains.kotlin.jvm from 2.3.21 to 2.4.0
+- Bump gradle-wrapper from 9.5.1 to 9.6.0
+
 ## [1.2.0] - 2026-05-08
 
 - Add support for JIRA cloud with Jira API V3
@@ -118,7 +126,8 @@
 
 - Initial release
 
-[Unreleased]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/1.2.0...HEAD
+[Unreleased]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/1.2.1...HEAD
+[1.2.1]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/1.1.0...1.2.0
 [1.1.0]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/1.0.5...1.1.0
 [1.0.5]: https://github.com/frimtec/idea-todo-inspection-plugin/compare/1.0.4...1.0.5
