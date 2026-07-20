@@ -1,6 +1,6 @@
 [versions]
 
-plugin-kotlin-jvm="2.4.0"
+plugin-kotlin-jvm="2.4.10"
 plugin-intellij-platform = "2.18.1"
 changelog = "2.5.0"
 qodana = "2026.1.3"
