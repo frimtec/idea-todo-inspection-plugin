@@ -97,6 +97,10 @@ tasks {
         sourceCompatibility = "25"
         targetCompatibility = "25"
     }
+
+    instrumentCode {
+        enabled = false
+    }
 }
 
 kotlin {
