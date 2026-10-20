@@ -35,6 +35,8 @@ dependencies {
 }
 
 intellijPlatform {
+    instrumentCode = false
+
     pluginConfiguration {
         ideaVersion {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
@@ -96,10 +98,6 @@ tasks {
     withType<JavaCompile> {
         sourceCompatibility = "25"
         targetCompatibility = "25"
-    }
-
-    instrumentCode {
-        enabled = false
     }
 }
 
