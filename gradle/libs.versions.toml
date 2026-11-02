@@ -7,7 +7,7 @@ qodana = "2026.2.2"
 
 retrofit = "3.0.0"
 retrofit-converter-gson = "3.0.0"
-gson = "2.14.0"
+gson = "2.15.0"
 
 wiremock = "3.0.1"
 mockito = "5.24.0"
